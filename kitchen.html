@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>キッチンディスプレイ</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Hiragino Sans", "Meiryo", sans-serif;
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: white;
+        padding: 15px;
+        overflow-x: hidden;
+      }
+
+      .header {
+        text-align: center;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        margin-bottom: 20px;
+        backdrop-filter: blur(10px);
+      }
+
+      .header h1 {
+        font-size: 32px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .last-update {
+        font-size: 16px;
+        color: #ecf0f1;
+        opacity: 0.8;
+      }
+
+      .dish-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .dish-card {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s, box-shadow 0.3s;
+        animation: fadeIn 0.5s ease-in;
+      }
+
+      .dish-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .dish-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid #3498db;
+      }
+
+      .dish-name {
+        font-size: 28px;
+        font-weight: bold;
+        color: #2c3e50;
+      }
+
+      .dish-total {
+        font-size: 36px;
+        font-weight: bold;
+        color: #e74c3c;
+        background: #ffe6e6;
+        padding: 10px 20px;
+        border-radius: 50px;
+        box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+      }
+
+      .order-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .order-item {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 15px;
+        border-radius: 12px;
+        border-left: 5px solid #3498db;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .order-header-line {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .room-name {
+        font-size: 16px;
+        color: #7f8c8d;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .room-icon {
+        font-size: 14px;
+      }
+
+      .order-people {
+        font-size: 26px;
+        font-weight: bold;
+        color: #2c3e50;
+      }
+
+      .order-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 8px;
+      }
+
+      .detail-tag {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .allergy-tag {
+        background: #fee;
+        color: #c0392b;
+        border: 2px solid #e74c3c;
+      }
+
+      .w-tag {
+        background: #fff3cd;
+        color: #856404;
+        border: 2px solid #ffc107;
+      }
+
+      .time-tag {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 2px solid #17a2b8;
+      }
+
+      .staff-tag {
+        background: #d4edda;
+        color: #155724;
+        border: 2px solid #28a745;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+      }
+
+      .empty-state h2 {
+        font-size: 28px;
+        margin-bottom: 15px;
+        opacity: 0.8;
+      }
+
+      .empty-state p {
+        font-size: 18px;
+        opacity: 0.6;
+      }
+
+      /* レスポンシブ調整 */
+      @media (max-width: 768px) {
+        .dish-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .dish-name {
+          font-size: 24px;
+        }
+
+        .dish-total {
+          font-size: 28px;
+        }
+
+        .order-people {
+          font-size: 22px;
+        }
+      }
+
+      /* ローディングアニメーション */
+      .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+      }
+
+      .loading-spinner {
+        border: 5px solid rgba(255, 255, 255, 0.3);
+        border-top: 5px solid white;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>🍳 キッチンディスプレイ</h1>
+      <div class="last-update" id="last-update">接続中...</div>
+    </div>
+
+    <div id="content">
+      <div class="loading">
+        <div class="loading-spinner"></div>
+      </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        onValue,
+      } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+
+      // Firebase設定
+      const firebaseConfig = {
+        apiKey: "AIzaSyAoyApbQzAlSYsM1MBDPZ68I5EaJ3M_yE8",
+        authDomain: "restaurant-order-system-8855a.firebaseapp.com",
+        databaseURL:
+          "https://restaurant-order-system-8855a-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "restaurant-order-system-8855a",
+        storageBucket: "restaurant-order-system-8855a.firebasestorage.app",
+        messagingSenderId: "695114713080",
+        appId: "1:695114713080:web:de13ca2e7e448e92fb380d",
+      };
+
+      // Firebase初期化
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
+      const ordersRef = ref(database, "orders");
+
+      // 注文データをリアルタイムで監視
+      onValue(
+        ordersRef,
+        (snapshot) => {
+          const orderData = snapshot.val();
+          updateDisplay(orderData);
+          updateLastUpdate();
+        },
+        (error) => {
+          console.error("Firebaseエラー:", error);
+          showError();
+        }
+      );
+
+      // 最終更新時刻を表示
+      function updateLastUpdate() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString("ja-JP", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+        document.getElementById(
+          "last-update"
+        ).textContent = `最終更新: ${timeStr}`;
+      }
+
+      // ディスプレイを更新
+      function updateDisplay(orderData) {
+        const content = document.getElementById("content");
+
+        if (!orderData) {
+          content.innerHTML = `
+                    <div class="empty-state">
+                        <h2>📋 注文がありません</h2>
+                        <p>iPadで注文を入力してください</p>
+                    </div>
+                `;
+          return;
+        }
+
+        // 料理ごとにグループ化
+        const dishGroups = {};
+
+        Object.entries(orderData).forEach(([roomName, roomData]) => {
+          if (!roomData.courses) return;
+
+          Object.entries(roomData.courses).forEach(
+            ([courseName, courseData]) => {
+              // 「注」(ordered)ステータスの料理のみ表示
+              if (courseData.status !== "ordered") return;
+
+              if (!dishGroups[courseName]) {
+                dishGroups[courseName] = [];
+              }
+
+              // 部屋の設定情報を取得(localStorageから)
+              const settings = JSON.parse(
+                localStorage.getItem("orderSettings") || "{}"
+              );
+              let roomSettings = null;
+
+              if (settings.rooms) {
+                roomSettings = settings.rooms.find((r) => r.name === roomName);
+              }
+              if (!roomSettings && settings.customRooms) {
+                roomSettings = settings.customRooms.find(
+                  (r) => r.name === roomName
+                );
+              }
+
+              const people = roomSettings ? roomSettings.people : 2;
+              const allergy =
+                roomSettings && roomSettings.allergies
+                  ? roomSettings.allergies[courseName]
+                  : null;
+
+              dishGroups[courseName].push({
+                roomName: roomName,
+                people: people,
+                allergy: allergy,
+                wCount: courseData.wCount || 0,
+                time: courseData.time,
+                staff: courseData.staff,
+                pressedTime: courseData.pressedTime,
+              });
+            }
+          );
+        });
+
+        // 表示を構築
+        if (Object.keys(dishGroups).length === 0) {
+          content.innerHTML = `
+                    <div class="empty-state">
+                        <h2>✅ 全ての注文が処理済みです</h2>
+                        <p>新しい注文をお待ちしています</p>
+                    </div>
+                `;
+          return;
+        }
+
+        let html = '<div class="dish-grid">';
+
+        Object.entries(dishGroups).forEach(([dishName, orders]) => {
+          const totalPeople = orders.reduce(
+            (sum, order) => sum + order.people,
+            0
+          );
+
+          html += `
+                    <div class="dish-card">
+                        <div class="dish-header">
+                            <div class="dish-name">${dishName}</div>
+                            <div class="dish-total">${totalPeople}名</div>
+                        </div>
+                        <div class="order-list">
+                `;
+
+          orders.forEach((order) => {
+            html += `
+                        <div class="order-item">
+                            <div class="order-header-line">
+                                <div class="room-name">
+                                    <span class="room-icon">🏠</span>
+                                    ${order.roomName}
+                                </div>
+                                <div class="order-people">${order.people}名</div>
+                            </div>
+                    `;
+
+            // 詳細タグ
+            const details = [];
+
+            if (order.allergy) {
+              details.push(`
+                            <span class="detail-tag allergy-tag">
+                                ⚠️ ${order.allergy}
+                            </span>
+                        `);
+            }
+
+            if (order.wCount > 0) {
+              details.push(`
+                            <span class="detail-tag w-tag">
+                                🔥 W×${order.wCount}
+                            </span>
+                        `);
+            }
+
+            if (order.time) {
+              details.push(`
+                            <span class="detail-tag time-tag">
+                                🕐 ${order.time}
+                            </span>
+                        `);
+            }
+
+            if (order.staff) {
+              details.push(`
+                            <span class="detail-tag staff-tag">
+                                👤 ${order.staff}
+                            </span>
+                        `);
+            }
+
+            if (details.length > 0) {
+              html += `<div class="order-details">${details.join("")}</div>`;
+            }
+
+            html += "</div>";
+          });
+
+          html += `
+                        </div>
+                    </div>
+                `;
+        });
+
+        html += "</div>";
+        content.innerHTML = html;
+      }
+
+      // エラー表示
+      function showError() {
+        const content = document.getElementById("content");
+        content.innerHTML = `
+                <div class="empty-state">
+                    <h2>❌ 接続エラー</h2>
+                    <p>Firebaseへの接続に失敗しました</p>
+                    <p style="margin-top: 10px; font-size: 14px;">ページを再読み込みしてください</p>
+                </div>
+            `;
+      }
+    </script>
+  </body>
+</html>
