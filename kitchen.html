@@ -13,188 +13,179 @@
 
         body {
             font-family: 'Hiragino Sans', 'Meiryo', sans-serif;
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: white;
-            padding: 15px;
+            background: #f5f5f5;
+            color: #333;
+            padding: 20px;
             overflow-x: hidden;
         }
 
         .header {
             text-align: center;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            background: white;
             border-radius: 15px;
-            margin-bottom: 20px;
-            backdrop-filter: blur(10px);
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .header h1 {
-            font-size: 32px;
+            font-size: 40px;
             font-weight: bold;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 12px;
+            color: #2c3e50;
         }
 
         .last-update {
-            font-size: 16px;
-            color: #ecf0f1;
-            opacity: 0.8;
+            font-size: 20px;
+            color: #7f8c8d;
         }
 
         .dish-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
         }
 
         .dish-card {
             background: white;
             border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s, box-shadow 0.3s;
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        .dish-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            border: 3px solid #3498db;
         }
 
         .dish-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #3498db;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 4px solid #3498db;
+        }
+
+        .dish-name-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
         .dish-name {
-            font-size: 28px;
+            font-size: 36px;
             font-weight: bold;
             color: #2c3e50;
+            line-height: 1.2;
+        }
+
+        .dish-furigana {
+            font-size: 32px;
+            font-weight: bold;
+            color: #7f8c8d;
+            line-height: 1.2;
         }
 
         .dish-total {
-            font-size: 36px;
+            font-size: 48px;
             font-weight: bold;
             color: #e74c3c;
             background: #ffe6e6;
-            padding: 10px 20px;
+            padding: 15px 25px;
             border-radius: 50px;
             box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+            min-width: 120px;
+            text-align: center;
         }
 
         .order-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 18px;
         }
 
         .order-item {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 15px;
+            background: #f8f9fa;
+            padding: 20px;
             border-radius: 12px;
-            border-left: 5px solid #3498db;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 6px solid #3498db;
         }
 
-        .order-header-line {
+        .room-names {
+            font-size: 18px;
+            color: #2c3e50;
+            font-weight: bold;
+            margin-bottom: 12px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        .room-name {
-            font-size: 16px;
-            color: #7f8c8d;
-            display: flex;
+        .room-name-item {
+            display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
 
         .room-icon {
-            font-size: 14px;
-        }
-
-        .order-people {
-            font-size: 26px;
-            font-weight: bold;
-            color: #2c3e50;
+            font-size: 16px;
         }
 
         .order-details {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 8px;
+            gap: 12px;
         }
 
         .detail-tag {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 14px;
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-size: 18px;
             font-weight: bold;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .allergy-tag {
             background: #fee;
             color: #c0392b;
-            border: 2px solid #e74c3c;
+            border: 3px solid #e74c3c;
         }
 
         .w-tag {
             background: #fff3cd;
             color: #856404;
-            border: 2px solid #ffc107;
+            border: 3px solid #ffc107;
         }
 
         .time-tag {
             background: #d1ecf1;
             color: #0c5460;
-            border: 2px solid #17a2b8;
+            border: 3px solid #17a2b8;
         }
 
         .staff-tag {
             background: #d4edda;
             color: #155724;
-            border: 2px solid #28a745;
+            border: 3px solid #28a745;
         }
 
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            background: rgba(255, 255, 255, 0.1);
+            padding: 80px 30px;
+            background: white;
             border-radius: 20px;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .empty-state h2 {
-            font-size: 28px;
-            margin-bottom: 15px;
-            opacity: 0.8;
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #2c3e50;
         }
 
         .empty-state p {
-            font-size: 18px;
-            opacity: 0.6;
+            font-size: 22px;
+            color: #7f8c8d;
         }
 
         /* レスポンシブ調整 */
@@ -204,15 +195,15 @@
             }
             
             .dish-name {
-                font-size: 24px;
+                font-size: 30px;
+            }
+            
+            .dish-furigana {
+                font-size: 26px;
             }
             
             .dish-total {
-                font-size: 28px;
-            }
-            
-            .order-people {
-                font-size: 22px;
+                font-size: 38px;
             }
         }
 
@@ -221,15 +212,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 200px;
+            height: 300px;
         }
 
         .loading-spinner {
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            border-top: 5px solid white;
+            border: 6px solid #e0e0e0;
+            border-top: 6px solid #3498db;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             animation: spin 1s linear infinite;
         }
 
@@ -256,6 +247,28 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
+        // 料理名のふりがな対応表
+        const COURSE_FURIGANA = {
+            "吸物": "すいもの",
+            "果菜盛り": "かさいもり",
+            "蒸物": "むしもの",
+            "揚物": "あげもの",
+            "煮物": "にもの",
+            "ご飯": "ごはん",
+            "甘味": "かんみ",
+            "すき焼き": "すきやき",
+            "フライ": "ふらい",
+            "ステーキ": "すてーき",
+            "しゃぶしゃぶ": "しゃぶしゃぶ",
+            "茶碗蒸し": "ちゃわんむし",
+            "牛たたき": "ぎゅうたたき",
+            "焼物": "やきもの",
+            "小鉢": "こばち"
+        };
+
+        // 部屋の表示順序を定義
+        const ROOM_ORDER = ["やまぶき", "はぎ", "つばき", "ききょう", "ふじ", "あやめ"];
+
         // Firebase設定
         const firebaseConfig = {
             apiKey: "AIzaSyAoyApbQzAlSYsM1MBDPZ68I5EaJ3M_yE8",
@@ -272,15 +285,82 @@
         const database = getDatabase(app);
         const ordersRef = ref(database, 'orders');
 
+        // 通知音制御用の変数
+        let lastNotificationTime = 0;
+        const NOTIFICATION_INTERVAL = 5000; // 5秒
+        let previousOrderStatuses = {};
+
+        // 通知音を再生（Web Audio APIで生成）
+        function playNotificationSound() {
+            const now = Date.now();
+            if (now - lastNotificationTime < NOTIFICATION_INTERVAL) {
+                return; // 5秒以内は鳴らさない
+            }
+            lastNotificationTime = now;
+
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.value = 800; // 800Hzのビープ音
+                oscillator.type = 'sine';
+
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+            } catch (error) {
+                console.error('通知音の再生エラー:', error);
+            }
+        }
+
         // 注文データをリアルタイムで監視
         onValue(ordersRef, (snapshot) => {
             const orderData = snapshot.val();
+            
+            // ステータス変更を検出して通知音を鳴らす
+            checkForNewOrders(orderData);
+            
             updateDisplay(orderData);
             updateLastUpdate();
         }, (error) => {
             console.error('Firebaseエラー:', error);
             showError();
         });
+
+        // 新しい「注」ステータスを検出
+        function checkForNewOrders(orderData) {
+            if (!orderData) return;
+
+            let hasNewOrder = false;
+
+            Object.entries(orderData).forEach(([roomName, roomData]) => {
+                if (!roomData.courses) return;
+
+                Object.entries(roomData.courses).forEach(([courseName, courseData]) => {
+                    const key = `${roomName}_${courseName}`;
+                    const currentStatus = courseData.status;
+                    const previousStatus = previousOrderStatuses[key];
+
+                    // 以前のステータスが存在し、かつ「order」以外から「order」に変わった場合
+                    if (previousStatus && previousStatus !== 'order' && currentStatus === 'order') {
+                        hasNewOrder = true;
+                    }
+
+                    // 現在のステータスを保存
+                    previousOrderStatuses[key] = currentStatus;
+                });
+            });
+
+            if (hasNewOrder) {
+                playNotificationSound();
+            }
+        }
 
         // 最終更新時刻を表示
         function updateLastUpdate() {
@@ -291,6 +371,24 @@
                 second: '2-digit' 
             });
             document.getElementById('last-update').textContent = `最終更新: ${timeStr}`;
+        }
+
+        // 部屋名を並び替える関数
+        function sortRoomsByOrder(rooms) {
+            return rooms.sort((a, b) => {
+                const indexA = ROOM_ORDER.indexOf(a.roomName);
+                const indexB = ROOM_ORDER.indexOf(b.roomName);
+                
+                // 両方とも定義されている場合は順序で比較
+                if (indexA !== -1 && indexB !== -1) {
+                    return indexA - indexB;
+                }
+                // 片方だけ定義されている場合は、定義されている方を前に
+                if (indexA !== -1) return -1;
+                if (indexB !== -1) return 1;
+                // どちらも定義されていない場合は名前で比較
+                return a.roomName.localeCompare(b.roomName, 'ja');
+            });
         }
 
         // ディスプレイを更新
@@ -362,27 +460,36 @@
             let html = '<div class="dish-grid">';
             
             Object.entries(dishGroups).forEach(([dishName, orders]) => {
-                const totalPeople = orders.reduce((sum, order) => sum + order.people, 0);
+                // 部屋の順序でソート
+                const sortedOrders = sortRoomsByOrder(orders);
+                const totalPeople = sortedOrders.reduce((sum, order) => sum + order.people, 0);
+                
+                // ふりがなを取得
+                const furigana = COURSE_FURIGANA[dishName] || '';
                 
                 html += `
                     <div class="dish-card">
                         <div class="dish-header">
-                            <div class="dish-name">${dishName}</div>
+                            <div class="dish-name-container">
+                                <div class="dish-name">${dishName}</div>
+                                ${furigana ? `<div class="dish-furigana">${furigana}</div>` : ''}
+                            </div>
                             <div class="dish-total">${totalPeople}名</div>
                         </div>
                         <div class="order-list">
                 `;
                 
-                orders.forEach(order => {
+                sortedOrders.forEach(order => {
+                    html += `<div class="order-item">`;
+                    
+                    // 部屋名の表示（人数は表示しない）
                     html += `
-                        <div class="order-item">
-                            <div class="order-header-line">
-                                <div class="room-name">
-                                    <span class="room-icon">🏠</span>
-                                    ${order.roomName}
-                                </div>
-                                <div class="order-people">${order.people}名</div>
+                        <div class="room-names">
+                            <div class="room-name-item">
+                                <span class="room-icon">🏠</span>
+                                ${order.roomName}
                             </div>
+                        </div>
                     `;
                     
                     // 詳細タグ
@@ -444,7 +551,7 @@
                 <div class="empty-state">
                     <h2>❌ 接続エラー</h2>
                     <p>Firebaseへの接続に失敗しました</p>
-                    <p style="margin-top: 10px; font-size: 14px;">ページを再読み込みしてください</p>
+                    <p style="margin-top: 15px; font-size: 18px;">ページを再読み込みしてください</p>
                 </div>
             `;
         }
