@@ -312,48 +312,75 @@
         let audioContext = null;
         let audioInitialized = false;
 
-        // 初回読み込み時にユーザーインタラクションで音声を有効化
-        document.addEventListener('click', function initAudio() {
-            if (!audioInitialized) {
-                try {
-                    // AudioContextを1回だけ作成して保持
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    audioContext.resume().then(() => {
-                        audioInitialized = true;
-                        console.log('音声が有効化されました - AudioContext ready');
-                    });
-                } catch (error) {
-                    console.error('音声の初期化エラー:', error);
-                }
+        // AudioContextを初期化する関数
+        function initAudioContext() {
+            if (audioInitialized) return;
+            
+            try {
+                // AudioContextを1回だけ作成して保持
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                audioContext.resume().then(() => {
+                    audioInitialized = true;
+                    console.log('音声が有効化されました - AudioContext ready');
+                });
+            } catch (error) {
+                console.error('音声の初期化エラー:', error);
             }
-        }, { once: true });
+        }
 
-        // 通知音を再生する関数
+        // ページ読み込み時に自動的に音声を初期化(一部のブラウザで有効)
+        window.addEventListener('load', initAudioContext);
+        
+        // ユーザーの最初のクリック/タッチで音声を有効化
+        document.addEventListener('click', initAudioContext, { once: true });
+        document.addEventListener('touchstart', initAudioContext, { once: true });
+
+        // 通知音を再生する関数(より目立つ音に改善)
         function playNotificationSound() {
             console.log('通知音を再生します');
 
-            // AudioContextが初期化されていない場合は再生しない
+            // AudioContextが初期化されていない場合は初期化を試みる
             if (!audioContext || !audioInitialized) {
-                console.warn('AudioContextが初期化されていません。画面をタップしてください。');
+                console.warn('AudioContextを初期化中...');
+                initAudioContext();
+                // 初期化後に再度再生を試みる
+                setTimeout(() => {
+                    if (audioInitialized) {
+                        playNotificationSound();
+                    } else {
+                        console.warn('AudioContextが初期化できませんでした。画面をタップしてください。');
+                    }
+                }, 100);
                 return;
             }
 
             try {
-                // 既存のAudioContextを再利用
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-
-                oscillator.frequency.value = 800; // 800Hzのビープ音
-                oscillator.type = 'sine';
-
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.1);
+                // 2段階の音を鳴らす(ピロン♪という感じ)
+                const now = audioContext.currentTime;
+                
+                // 1音目 (高い音)
+                const osc1 = audioContext.createOscillator();
+                const gain1 = audioContext.createGain();
+                osc1.connect(gain1);
+                gain1.connect(audioContext.destination);
+                osc1.frequency.value = 1000; // 1000Hz
+                osc1.type = 'sine';
+                gain1.gain.setValueAtTime(0.4, now);
+                gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                osc1.start(now);
+                osc1.stop(now + 0.15);
+                
+                // 2音目 (少し低い音)
+                const osc2 = audioContext.createOscillator();
+                const gain2 = audioContext.createGain();
+                osc2.connect(gain2);
+                gain2.connect(audioContext.destination);
+                osc2.frequency.value = 800; // 800Hz
+                osc2.type = 'sine';
+                gain2.gain.setValueAtTime(0.4, now + 0.15);
+                gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc2.start(now + 0.15);
+                osc2.stop(now + 0.3);
                 
                 console.log('通知音を再生しました');
             } catch (error) {
@@ -405,10 +432,13 @@
                     const currentStatus = courseData.status;
                     const previousStatus = previousOrderStatuses[key];
 
-                    // 以前のステータスが存在し、かつ「order」以外から「order」に変わった場合
-                    if (previousStatus && previousStatus !== 'order' && currentStatus === 'order') {
-                        hasNewOrder = true;
-                        console.log(`新しい注文を検出: ${roomName} - ${courseName}`);
+                    // 初回データ取得後、「order」ステータスの変化を検出
+                    if (initialDataLoaded) {
+                        // 以前のステータスが存在し、かつ「order」以外から「order」に変わった場合
+                        if (previousStatus && previousStatus !== 'order' && currentStatus === 'order') {
+                            hasNewOrder = true;
+                            console.log(`新しい注文を検出: ${roomName} - ${courseName}`);
+                        }
                     }
 
                     // 現在のステータスを保存
