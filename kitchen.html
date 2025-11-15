@@ -305,12 +305,38 @@
             }
         }, 10000);
 
+        // AudioContextをグローバルで1つだけ保持(iOS Safari対策)
+        let audioContext = null;
+        let audioInitialized = false;
+
+        // 初回読み込み時にユーザーインタラクションで音声を有効化
+        document.addEventListener('click', function initAudio() {
+            if (!audioInitialized) {
+                try {
+                    // AudioContextを1回だけ作成して保持
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    audioContext.resume().then(() => {
+                        audioInitialized = true;
+                        console.log('音声が有効化されました - AudioContext ready');
+                    });
+                } catch (error) {
+                    console.error('音声の初期化エラー:', error);
+                }
+            }
+        }, { once: true });
+
         // 通知音を再生する関数
         function playNotificationSound() {
             console.log('通知音を再生します');
 
+            // AudioContextが初期化されていない場合は再生しない
+            if (!audioContext || !audioInitialized) {
+                console.warn('AudioContextが初期化されていません。画面をタップしてください。');
+                return;
+            }
+
             try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                // 既存のAudioContextを再利用
                 const oscillator = audioContext.createOscillator();
                 const gainNode = audioContext.createGain();
 
@@ -325,25 +351,12 @@
 
                 oscillator.start(audioContext.currentTime);
                 oscillator.stop(audioContext.currentTime + 0.1);
+                
+                console.log('通知音を再生しました');
             } catch (error) {
                 console.error('通知音の再生エラー:', error);
             }
         }
-
-        // 初回読み込み時にユーザーインタラクションで音声を有効化
-        let audioInitialized = false;
-        document.addEventListener('click', function initAudio() {
-            if (!audioInitialized) {
-                try {
-                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    audioContext.resume();
-                    audioInitialized = true;
-                    console.log('音声が有効化されました');
-                } catch (error) {
-                    console.error('音声の初期化エラー:', error);
-                }
-            }
-        }, { once: true });
 
         // 注文データをリアルタイムで監視
         onValue(ordersRef, (snapshot) => {
@@ -521,45 +534,63 @@
                         <div class="order-list">
                 `;
                 
+                // 詳細情報(アレルギー・火入れ・担当者)でグループ化
+                const groupedOrders = {};
                 sortedOrders.forEach(order => {
+                    const key = `${order.allergy || 'none'}_${order.wCount}_${order.staff || 'none'}`;
+                    if (!groupedOrders[key]) {
+                        groupedOrders[key] = {
+                            rooms: [],
+                            allergy: order.allergy,
+                            wCount: order.wCount,
+                            staff: order.staff
+                        };
+                    }
+                    groupedOrders[key].rooms.push(order.roomName);
+                });
+                
+                // 各グループを表示
+                Object.values(groupedOrders).forEach(group => {
                     html += `<div class="order-item">`;
                     
-                    // 部屋名の表示
-                    html += `
-                        <div class="room-names">
+                    // 部屋名を横並びで表示
+                    html += `<div class="room-names">`;
+                    group.rooms.forEach(roomName => {
+                        html += `
                             <div class="room-name-item">
                                 <span class="room-icon">🏠</span>
-                                ${order.roomName}
+                                ${roomName}
                             </div>
-                        </div>
-                    `;
+                        `;
+                    });
+                    html += `</div>`;
                     
-                    // 詳細タグ(アレルギー・火入れ・担当者のみ、提供時間は削除)
+                    // 詳細タグ(アレルギー・火入れ・担当者のみ)
                     const details = [];
                     
                     // アレルギータグ - 最優先で表示
-                    if (order.allergy) {
+                    if (group.allergy) {
                         details.push(`
                             <span class="detail-tag allergy-tag">
-                                ⚠️ ${order.allergy}
+                                ⚠️ ${group.allergy}
                             </span>
                         `);
                     }
                     
                     // 火入れタグ(W×2など) - 必ず表示
-                    if (order.wCount > 0) {
+                    if (group.wCount > 0) {
                         details.push(`
                             <span class="detail-tag w-tag">
-                                🔥 W×${order.wCount}
+                                🔥 W×${group.wCount}
                             </span>
                         `);
                     }
                     
                     // 担当者タグ
-                    if (order.staff) {
+                    if (group.staff) {
                         details.push(`
                             <span class="detail-tag staff-tag">
-                                👤 ${order.staff}
+                                👤 ${group.staff}
                             </span>
                         `);
                     }

@@ -331,8 +331,8 @@
         }
 
         .room-info {
-            min-width: 115px;
-            max-width: 115px;
+            min-width: 130px;
+            max-width: 130px;
             padding-right: 10px;
             border-right: 2px solid #f0ebe3;
         }
@@ -342,13 +342,15 @@
             align-items: baseline;
             gap: 6px;
             margin-bottom: 4px;
+            white-space: nowrap;
         }
 
         .room-name {
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 22px;
+            font-weight: 900;
             color: #8b7355;
             line-height: 1.2;
+            white-space: nowrap;
         }
 
         .room-plan {
@@ -363,8 +365,8 @@
         }
 
         .room-people {
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 28px;
+            font-weight: 900;
             color: #8b7355;
             line-height: 1.2;
         }
@@ -712,8 +714,8 @@
             }
             
             .room-info {
-                min-width: 120px;
-                max-width: 120px;
+                min-width: 130px;
+                max-width: 130px;
             }
 
             .eating-speed {
@@ -1333,7 +1335,7 @@
                 <div class="room-info">
                     <div class="room-header">
                         <div class="room-name">${room.name}</div>
-                        <div class="room-people">${room.people}名</div>
+                        <div class="room-people">${room.people}</div>
                     </div>
                     <div class="room-plan" style="background-color: ${planColor}20; border: 1px solid ${planColor};">${room.plan}</div>
                     <div class="speed-memo-row">
