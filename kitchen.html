@@ -115,15 +115,23 @@
             border-left: 4px solid #3498db;
         }
 
-        /* 部屋名表示 */
-        .room-names {
-            font-size: 16px;
-            color: #2c3e50;
-            font-weight: bold;
-            margin-bottom: 8px;
+        /* アイテムヘッダー: タグを横並びに配置 */
+        .item-header {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        /* 部屋名表示 - 小さめの補足情報として */
+        .room-names {
+            font-size: 14px;
+            color: #666;
+            font-weight: normal;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .room-name-item {
@@ -136,39 +144,34 @@
             font-size: 14px;
         }
 
-        /* タグ表示エリア - アレルギー・火入れを必ず表示 */
-        .order-details {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-        }
-
-        /* 各タグのスタイル - コンパクトかつ見やすく */
+        /* 各タグのスタイル - より大きく目立つように */
         .detail-tag {
-            padding: 8px 14px;
+            padding: 10px 16px;
             border-radius: 20px;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             display: inline-flex;
             align-items: center;
             gap: 6px;
             white-space: nowrap;
             flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         }
 
-        /* アレルギータグ - 目立つように */
+        /* アレルギータグ - 赤色で目立つように */
         .allergy-tag {
-            background: #fee;
-            color: #c0392b;
-            border: 2px solid #e74c3c;
+            background: #ff6b6b;
+            color: white;
+            border: 3px solid #c92a2a;
+            font-size: 20px;
         }
 
-        /* 火入れタグ(W×2など) - 黄色で目立つように */
+        /* 火入れタグ(W×2など) - オレンジ色で目立つように */
         .w-tag {
-            background: #fff3cd;
-            color: #856404;
-            border: 2px solid #ffc107;
+            background: #ffa94d;
+            color: #fff;
+            border: 3px solid #ff8c00;
+            font-size: 20px;
         }
 
         /* 担当者タグ */
@@ -475,7 +478,7 @@
                         dishGroups[courseName] = [];
                     }
                     
-                    // 部屋の設定情報を取得(localStorageから)
+                    // 部屋の設定情報を取得(localStorageから - 人数のみ)
                     const settings = JSON.parse(localStorage.getItem('orderSettings') || '{}');
                     let roomSettings = null;
                     
@@ -487,8 +490,8 @@
                     }
                     
                     const people = roomSettings ? roomSettings.people : 2;
-                    const allergy = roomSettings && roomSettings.allergies ? 
-                        roomSettings.allergies[courseName] : null;
+                    // アレルギー情報はFirebaseから取得
+                    const allergy = courseData.allergy || '';
                     
                     dishGroups[courseName].push({
                         roomName: roomName,
@@ -553,7 +556,42 @@
                 Object.values(groupedOrders).forEach(group => {
                     html += `<div class="order-item">`;
                     
-                    // 部屋名を横並びで表示
+                    // タグを先に表示(火入れ・アレルギー)
+                    const tags = [];
+                    
+                    // 火入れタグ(W×2など) - 最優先で表示
+                    if (group.wCount > 0) {
+                        tags.push(`
+                            <span class="detail-tag w-tag">
+                                🔥 W×${group.wCount}
+                            </span>
+                        `);
+                    }
+                    
+                    // アレルギータグ - 2番目に表示
+                    if (group.allergy) {
+                        tags.push(`
+                            <span class="detail-tag allergy-tag">
+                                ${group.allergy}NG
+                            </span>
+                        `);
+                    }
+                    
+                    // 担当者タグ
+                    if (group.staff) {
+                        tags.push(`
+                            <span class="detail-tag staff-tag">
+                                👤 ${group.staff}
+                            </span>
+                        `);
+                    }
+                    
+                    // タグがある場合、item-headerで表示
+                    if (tags.length > 0) {
+                        html += `<div class="item-header">${tags.join('')}</div>`;
+                    }
+                    
+                    // 部屋名を小さく横並びで表示
                     html += `<div class="room-names">`;
                     group.rooms.forEach(roomName => {
                         html += `
@@ -564,41 +602,6 @@
                         `;
                     });
                     html += `</div>`;
-                    
-                    // 詳細タグ(アレルギー・火入れ・担当者のみ)
-                    const details = [];
-                    
-                    // アレルギータグ - 最優先で表示
-                    if (group.allergy) {
-                        details.push(`
-                            <span class="detail-tag allergy-tag">
-                                ⚠️ ${group.allergy}
-                            </span>
-                        `);
-                    }
-                    
-                    // 火入れタグ(W×2など) - 必ず表示
-                    if (group.wCount > 0) {
-                        details.push(`
-                            <span class="detail-tag w-tag">
-                                🔥 W×${group.wCount}
-                            </span>
-                        `);
-                    }
-                    
-                    // 担当者タグ
-                    if (group.staff) {
-                        details.push(`
-                            <span class="detail-tag staff-tag">
-                                👤 ${group.staff}
-                            </span>
-                        `);
-                    }
-                    
-                    // タグがある場合のみ表示
-                    if (details.length > 0) {
-                        html += `<div class="order-details">${details.join('')}</div>`;
-                    }
                     
                     html += '</div>';
                 });

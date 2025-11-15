@@ -947,28 +947,36 @@
                 
                 // 通常の料理
                 courses.forEach(course => {
+                    // アレルギー情報を取得
+                    const allergy = room.allergies && room.allergies[course] ? room.allergies[course] : '';
+                    
                     orderState[room.name].courses[course] = {
                         status: 'none',
                         time: null,
                         pressedTime: null,
                         staff: null,
-                        wCount: 0
+                        wCount: 0,
+                        allergy: allergy
                     };
                 });
                 
                 // 追加料理
                 const roomIndex = room.isCustom ? 
                     'custom-' + settings.customRooms.indexOf(room) : 
-                    String(settings.rooms.indexOf(room));  // 文字列に変換！
+                    String(settings.rooms.indexOf(room));
                 
                 settings.additionalDishes.forEach(dish => {
                     if (dish.rooms.includes(roomIndex)) {
+                        // 追加料理のアレルギー情報を取得
+                        const allergy = room.allergies && room.allergies[dish.name] ? room.allergies[dish.name] : '';
+                        
                         orderState[room.name].courses[dish.name] = {
                             status: 'none',
                             time: null,
                             pressedTime: null,
                             staff: null,
-                            wCount: 0
+                            wCount: 0,
+                            allergy: allergy
                         };
                     }
                 });
@@ -1361,10 +1369,11 @@
 
         function createCourseButton(room, course, state, planColor) {
             if (!state) {
-                state = { status: 'none', time: null, pressedTime: null, staff: null, wCount: 0 };
+                const allergy = room.allergies && room.allergies[course] ? room.allergies[course] : '';
+                state = { status: 'none', time: null, pressedTime: null, staff: null, wCount: 0, allergy: allergy };
             }
 
-            const allergy = room.allergies[course] || '';
+            const allergy = room.allergies[course] || state.allergy || '';
             const allergyBadge = allergy ? `<div class="allergy-badge">${allergy}NG</div>` : '';
             
             let buttonText = '未';
@@ -1417,10 +1426,11 @@
             `;
         }
 
-        // 追加料理ボタン作成（通常の料理と同じ動作）
+        // 追加料理ボタン作成(通常の料理と同じ動作)
         function createAdditionalCourseButton(room, dishName, quantity, state, planColor) {
             if (!state) {
-                state = { status: 'none', time: null, pressedTime: null, staff: null, wCount: 0 };
+                const allergy = room.allergies && room.allergies[dishName] ? room.allergies[dishName] : '';
+                state = { status: 'none', time: null, pressedTime: null, staff: null, wCount: 0, allergy: allergy };
             }
             
             let buttonText = '未';
@@ -1737,6 +1747,13 @@
 
         function updateAllergy(roomIndex, course, value) {
             settings.rooms[roomIndex].allergies[course] = value;
+            
+            // orderStateにも反映
+            const roomName = settings.rooms[roomIndex].name;
+            if (orderState[roomName] && orderState[roomName].courses[course]) {
+                orderState[roomName].courses[course].allergy = value;
+                saveOrderState();
+            }
         }
 
         function toggleStaff(index) {
@@ -1872,9 +1889,16 @@
                 const input = document.getElementById(`allergy-${course}`);
                 if (input) {
                     room.allergies[course] = input.value.trim();
+                    
+                    // orderStateにも反映
+                    const roomName = room.name;
+                    if (orderState[roomName] && orderState[roomName].courses[course]) {
+                        orderState[roomName].courses[course].allergy = input.value.trim();
+                    }
                 }
             });
             
+            saveOrderState();
             closeModal();
             alert('アレルギー設定を保存しました');
         }
