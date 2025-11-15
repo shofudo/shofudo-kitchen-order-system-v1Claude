@@ -15,176 +15,186 @@
             font-family: 'Hiragino Sans', 'Meiryo', sans-serif;
             background: #f5f5f5;
             color: #333;
-            padding: 20px;
+            padding: 10px;
             overflow-x: hidden;
         }
 
+        /* ヘッダーをコンパクトに */
         .header {
             text-align: center;
-            padding: 25px;
+            padding: 12px;
             background: white;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .header h1 {
-            font-size: 40px;
+            font-size: 28px;
             font-weight: bold;
-            margin-bottom: 12px;
+            margin-bottom: 5px;
             color: #2c3e50;
         }
 
         .last-update {
-            font-size: 20px;
+            font-size: 14px;
             color: #7f8c8d;
         }
 
+        /* グリッドレイアウト - より多くのカードを表示 */
         .dish-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 25px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
         }
 
+        /* カードをコンパクトに */
         .dish-card {
             background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            border: 3px solid #3498db;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+            border: 2px solid #3498db;
         }
 
+        /* ヘッダー部分をコンパクトに */
         .dish-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 4px solid #3498db;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #3498db;
         }
 
         .dish-name-container {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 3px;
         }
 
         .dish-name {
-            font-size: 36px;
+            font-size: 28px;
             font-weight: bold;
             color: #2c3e50;
             line-height: 1.2;
         }
 
         .dish-furigana {
-            font-size: 32px;
+            font-size: 24px;
             font-weight: bold;
             color: #7f8c8d;
             line-height: 1.2;
         }
 
         .dish-total {
-            font-size: 48px;
+            font-size: 40px;
             font-weight: bold;
             color: #e74c3c;
             background: #ffe6e6;
-            padding: 15px 25px;
+            padding: 10px 20px;
             border-radius: 50px;
-            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
-            min-width: 120px;
+            box-shadow: 0 3px 8px rgba(231, 76, 60, 0.3);
+            min-width: 100px;
             text-align: center;
         }
 
+        /* 注文リストをコンパクトに */
         .order-list {
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 12px;
         }
 
+        /* 各注文アイテムをコンパクトに */
         .order-item {
             background: #f8f9fa;
-            padding: 20px;
-            border-radius: 12px;
-            border-left: 6px solid #3498db;
+            padding: 12px;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
         }
 
+        /* 部屋名表示 */
         .room-names {
-            font-size: 18px;
+            font-size: 16px;
             color: #2c3e50;
             font-weight: bold;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
         }
 
         .room-name-item {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
         }
 
         .room-icon {
-            font-size: 16px;
+            font-size: 14px;
         }
 
+        /* タグ表示エリア - アレルギー・火入れを必ず表示 */
         .order-details {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 8px;
+            align-items: center;
         }
 
+        /* 各タグのスタイル - コンパクトかつ見やすく */
         .detail-tag {
-            padding: 10px 18px;
-            border-radius: 25px;
-            font-size: 18px;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 16px;
             font-weight: bold;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
+        /* アレルギータグ - 目立つように */
         .allergy-tag {
             background: #fee;
             color: #c0392b;
-            border: 3px solid #e74c3c;
+            border: 2px solid #e74c3c;
         }
 
+        /* 火入れタグ(W×2など) - 黄色で目立つように */
         .w-tag {
             background: #fff3cd;
             color: #856404;
-            border: 3px solid #ffc107;
+            border: 2px solid #ffc107;
         }
 
-        .time-tag {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 3px solid #17a2b8;
-        }
-
+        /* 担当者タグ */
         .staff-tag {
             background: #d4edda;
             color: #155724;
-            border: 3px solid #28a745;
+            border: 2px solid #28a745;
         }
 
+        /* 空の状態 */
         .empty-state {
             text-align: center;
-            padding: 80px 30px;
+            padding: 60px 30px;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .empty-state h2 {
-            font-size: 36px;
-            margin-bottom: 20px;
+            font-size: 32px;
+            margin-bottom: 15px;
             color: #2c3e50;
         }
 
         .empty-state p {
-            font-size: 22px;
+            font-size: 20px;
             color: #7f8c8d;
         }
 
@@ -195,15 +205,15 @@
             }
             
             .dish-name {
-                font-size: 30px;
+                font-size: 24px;
             }
             
             .dish-furigana {
-                font-size: 26px;
+                font-size: 20px;
             }
             
             .dish-total {
-                font-size: 38px;
+                font-size: 32px;
             }
         }
 
@@ -259,15 +269,12 @@
             "すき焼き": "すきやき",
             "フライ": "ふらい",
             "ステーキ": "すてーき",
-            "しゃぶしゃぶ": "しゃぶしゃぶ",
-            "茶碗蒸し": "ちゃわんむし",
-            "牛たたき": "ぎゅうたたき",
-            "焼物": "やきもの",
-            "小鉢": "こばち"
+            "鍋": "なべ",
+            "鮑": "あわび"
         };
 
-        // 部屋の表示順序を定義
-        const ROOM_ORDER = ["やまぶき", "はぎ", "つばき", "ききょう", "ふじ", "あやめ"];
+        // 部屋の表示順序
+        const ROOM_ORDER = ["やまぶき", "わすれな草", "しゃくなげ", "あんず", "なつめ"];
 
         // Firebase設定
         const firebaseConfig = {
@@ -285,18 +292,22 @@
         const database = getDatabase(app);
         const ordersRef = ref(database, 'orders');
 
-        // 通知音制御用の変数
-        let lastNotificationTime = 0;
-        const NOTIFICATION_INTERVAL = 5000; // 5秒
+        // 前回のステータスを保持(通知音用)
         let previousOrderStatuses = {};
 
-        // 通知音を再生（Web Audio APIで生成）
-        function playNotificationSound() {
-            const now = Date.now();
-            if (now - lastNotificationTime < NOTIFICATION_INTERVAL) {
-                return; // 5秒以内は鳴らさない
+        // 初回データ取得フラグ
+        let initialDataLoaded = false;
+
+        // タイムアウト設定(10秒以内にデータが取得できない場合はエラー表示)
+        const loadingTimeout = setTimeout(() => {
+            if (!initialDataLoaded) {
+                showError('接続タイムアウト', 'Firebaseへの接続に時間がかかっています。ネットワーク接続を確認してください。');
             }
-            lastNotificationTime = now;
+        }, 10000);
+
+        // 通知音を再生する関数
+        function playNotificationSound() {
+            console.log('通知音を再生します');
 
             try {
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -319,8 +330,30 @@
             }
         }
 
+        // 初回読み込み時にユーザーインタラクションで音声を有効化
+        let audioInitialized = false;
+        document.addEventListener('click', function initAudio() {
+            if (!audioInitialized) {
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    audioContext.resume();
+                    audioInitialized = true;
+                    console.log('音声が有効化されました');
+                } catch (error) {
+                    console.error('音声の初期化エラー:', error);
+                }
+            }
+        }, { once: true });
+
         // 注文データをリアルタイムで監視
         onValue(ordersRef, (snapshot) => {
+            // 初回データ取得成功
+            if (!initialDataLoaded) {
+                initialDataLoaded = true;
+                clearTimeout(loadingTimeout);
+                console.log('Firebase接続成功');
+            }
+            
             const orderData = snapshot.val();
             
             // ステータス変更を検出して通知音を鳴らす
@@ -330,7 +363,16 @@
             updateLastUpdate();
         }, (error) => {
             console.error('Firebaseエラー:', error);
-            showError();
+            clearTimeout(loadingTimeout);
+            
+            // エラーの種類に応じたメッセージを表示
+            if (error.code === 'PERMISSION_DENIED') {
+                showError('権限エラー', 'Firebaseデータベースへのアクセス権限がありません。Database Rulesを確認してください。');
+            } else if (error.code === 'NETWORK_ERROR') {
+                showError('ネットワークエラー', 'ネットワーク接続を確認してください。');
+            } else {
+                showError('接続エラー', `Firebaseへの接続に失敗しました。エラーコード: ${error.code || '不明'}`);
+            }
         });
 
         // 新しい「注」ステータスを検出
@@ -350,6 +392,7 @@
                     // 以前のステータスが存在し、かつ「order」以外から「order」に変わった場合
                     if (previousStatus && previousStatus !== 'order' && currentStatus === 'order') {
                         hasNewOrder = true;
+                        console.log(`新しい注文を検出: ${roomName} - ${courseName}`);
                     }
 
                     // 現在のステータスを保存
@@ -439,7 +482,6 @@
                         people: people,
                         allergy: allergy,
                         wCount: courseData.wCount || 0,
-                        time: courseData.time,
                         staff: courseData.staff,
                         pressedTime: courseData.pressedTime
                     });
@@ -482,7 +524,7 @@
                 sortedOrders.forEach(order => {
                     html += `<div class="order-item">`;
                     
-                    // 部屋名の表示（人数は表示しない）
+                    // 部屋名の表示
                     html += `
                         <div class="room-names">
                             <div class="room-name-item">
@@ -492,9 +534,10 @@
                         </div>
                     `;
                     
-                    // 詳細タグ
+                    // 詳細タグ(アレルギー・火入れ・担当者のみ、提供時間は削除)
                     const details = [];
                     
+                    // アレルギータグ - 最優先で表示
                     if (order.allergy) {
                         details.push(`
                             <span class="detail-tag allergy-tag">
@@ -503,6 +546,7 @@
                         `);
                     }
                     
+                    // 火入れタグ(W×2など) - 必ず表示
                     if (order.wCount > 0) {
                         details.push(`
                             <span class="detail-tag w-tag">
@@ -511,14 +555,7 @@
                         `);
                     }
                     
-                    if (order.time) {
-                        details.push(`
-                            <span class="detail-tag time-tag">
-                                🕐 ${order.time}
-                            </span>
-                        `);
-                    }
-                    
+                    // 担当者タグ
                     if (order.staff) {
                         details.push(`
                             <span class="detail-tag staff-tag">
@@ -527,6 +564,7 @@
                         `);
                     }
                     
+                    // タグがある場合のみ表示
                     if (details.length > 0) {
                         html += `<div class="order-details">${details.join('')}</div>`;
                     }
@@ -545,13 +583,25 @@
         }
 
         // エラー表示
-        function showError() {
+        function showError(title = '接続エラー', message = 'Firebaseへの接続に失敗しました') {
             const content = document.getElementById('content');
             content.innerHTML = `
                 <div class="empty-state">
-                    <h2>❌ 接続エラー</h2>
-                    <p>Firebaseへの接続に失敗しました</p>
+                    <h2>❌ ${title}</h2>
+                    <p>${message}</p>
                     <p style="margin-top: 15px; font-size: 18px;">ページを再読み込みしてください</p>
+                    <button onclick="location.reload()" style="
+                        margin-top: 20px;
+                        padding: 15px 30px;
+                        font-size: 18px;
+                        font-weight: bold;
+                        background: #3498db;
+                        color: white;
+                        border: none;
+                        border-radius: 10px;
+                        cursor: pointer;
+                        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+                    ">🔄 再読み込み</button>
                 </div>
             `;
         }

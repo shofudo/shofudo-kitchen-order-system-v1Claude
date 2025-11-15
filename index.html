@@ -331,17 +331,17 @@
         }
 
         .room-info {
-            min-width: 130px;
-            max-width: 130px;
+            min-width: 115px;
+            max-width: 115px;
             padding-right: 10px;
             border-right: 2px solid #f0ebe3;
         }
 
         .room-header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 3px;
+            align-items: baseline;
+            gap: 6px;
+            margin-bottom: 4px;
         }
 
         .room-name {
@@ -353,16 +353,20 @@
 
         .room-plan {
             font-size: 10px;
-            color: #999;
+            color: #333;
+            font-weight: bold;
             margin-top: 2px;
             line-height: 1.2;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-block;
         }
 
         .room-people {
-            font-size: 28px;
+            font-size: 16px;
             font-weight: bold;
             color: #8b7355;
-            line-height: 1;
+            line-height: 1.2;
         }
 
         .speed-memo-row {
@@ -1331,7 +1335,7 @@
                         <div class="room-name">${room.name}</div>
                         <div class="room-people">${room.people}名</div>
                     </div>
-                    <div class="room-plan">${room.plan}</div>
+                    <div class="room-plan" style="background-color: ${planColor}20; border: 1px solid ${planColor};">${room.plan}</div>
                     <div class="speed-memo-row">
                         <div class="eating-speed ${speedClass}" onclick="showEatingSpeedModal('${room.name}')">
                             ${roomState.eatingSpeed}
@@ -1342,9 +1346,9 @@
                 <div class="course-grid" id="courses-${room.name}">
                     ${coursesWithAdditional.map(courseObj => {
                         if (courseObj.isAdditional) {
-                            return createAdditionalCourseButton(room, courseObj.name, courseObj.quantity, roomState.courses[courseObj.name]);
+                            return createAdditionalCourseButton(room, courseObj.name, courseObj.quantity, roomState.courses[courseObj.name], planColor);
                         } else {
-                            return createCourseButton(room, courseObj.name, roomState.courses[courseObj.name]);
+                            return createCourseButton(room, courseObj.name, roomState.courses[courseObj.name], planColor);
                         }
                     }).join('')}
                 </div>
@@ -1353,7 +1357,7 @@
             return div;
         }
 
-        function createCourseButton(room, course, state) {
+        function createCourseButton(room, course, state, planColor) {
             if (!state) {
                 state = { status: 'none', time: null, pressedTime: null, staff: null, wCount: 0 };
             }
@@ -1363,19 +1367,27 @@
             
             let buttonText = '未';
             let statusClass = '';
+            let buttonStyle = '';
             
             if (state.status === 'wait') {
                 buttonText = state.time ? state.time.split(':')[1] : '待';
                 statusClass = 'status-wait';
+                buttonStyle = `border-color: ${planColor};`;
             } else if (state.status === 'order') {
                 buttonText = '注';
                 statusClass = 'status-order';
+                buttonStyle = `border-color: ${planColor};`;
             } else if (state.status === 'meat') {
                 buttonText = state.time ? state.time.split(':')[1] : '肉';
                 statusClass = 'status-meat';
+                buttonStyle = `border-color: ${planColor};`;
             } else if (state.status === 'serve') {
                 buttonText = '提';
                 statusClass = 'status-serve';
+                buttonStyle = `border-color: ${planColor};`;
+            } else {
+                // 未状態の時はプランカラーの薄い背景を追加
+                buttonStyle = `background-color: ${planColor}15; border-color: ${planColor}80;`;
             }
 
             // ケーキ・プレートは丸ボタンの下に表示
@@ -1388,8 +1400,8 @@
 
             return `
                 <div class="course-item">
-                    <div class="course-name">${course}</div>
-                    <div class="course-button ${statusClass}" onclick="clickCourse('${room.name}', '${course}')">
+                    <div class="course-name" style="color: ${planColor};">${course}</div>
+                    <div class="course-button ${statusClass}" style="${buttonStyle}" onclick="clickCourse('${room.name}', '${course}')">
                         ${allergyBadge}
                         ${wCountBadge}
                         ${buttonText}
@@ -1404,23 +1416,30 @@
         }
 
         // 追加料理ボタン作成（通常の料理と同じ動作）
-        function createAdditionalCourseButton(room, dishName, quantity, state) {
+        function createAdditionalCourseButton(room, dishName, quantity, state, planColor) {
             if (!state) {
                 state = { status: 'none', time: null, pressedTime: null, staff: null, wCount: 0 };
             }
             
             let buttonText = '未';
             let statusClass = '';
+            let buttonStyle = '';
             
             if (state.status === 'wait') {
                 buttonText = state.time ? state.time.split(':')[1] : '待';
                 statusClass = 'status-wait';
+                buttonStyle = `border-color: ${planColor};`;
             } else if (state.status === 'order') {
                 buttonText = '注';
                 statusClass = 'status-order';
+                buttonStyle = `border-color: ${planColor};`;
             } else if (state.status === 'serve') {
                 buttonText = '提';
                 statusClass = 'status-serve';
+                buttonStyle = `border-color: ${planColor};`;
+            } else {
+                // 未状態の時はプランカラーの薄い背景を追加
+                buttonStyle = `background-color: ${planColor}15; border-color: ${planColor}80;`;
             }
 
             // スタッフは丸ボタン内に表示
@@ -1428,11 +1447,11 @@
             
             return `
                 <div class="course-item">
-                    <div class="course-name additional-dish-name">
+                    <div class="course-name additional-dish-name" style="color: ${planColor};">
                         ${dishName}
                         <span class="quantity-badge">×${quantity}</span>
                     </div>
-                    <div class="course-button square-button ${statusClass}" onclick="clickCourse('${room.name}', '${dishName}')">
+                    <div class="course-button square-button ${statusClass}" style="${buttonStyle}" onclick="clickCourse('${room.name}', '${dishName}')">
                         ${buttonText}
                         ${staffBadge}
                     </div>
