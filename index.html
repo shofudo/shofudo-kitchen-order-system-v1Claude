@@ -98,13 +98,12 @@
             font-weight: bold;
             color: #666;
             border: 1px solid #e0d8cc;
-            font-size: 12px;
         }
 
         .settings-table td {
             padding: 8px 5px;
-            border: 1px solid #e0d8cc;
             text-align: center;
+            border: 1px solid #e0d8cc;
         }
 
         .settings-table input[type="checkbox"] {
@@ -113,45 +112,189 @@
             cursor: pointer;
         }
 
-        .settings-table input[type="number"],
+        .settings-table input[type="text"],
+        .settings-table input[type="number"] {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #e0d8cc;
+            border-radius: 4px;
+            font-size: 14px;
+            text-align: center;
+        }
+
         .settings-table select {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            padding: 6px;
+            border: 1px solid #e0d8cc;
+            border-radius: 4px;
             font-size: 14px;
         }
 
-        .settings-table input[type="text"] {
-            width: 100%;
-            padding: 6px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+        .allergy-btn {
+            background: #e0d8cc;
+            color: #666;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .allergy-btn:active {
+            background: #d0c8bc;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
             font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
         }
 
         .custom-input-row {
-            background: #f9f9f9;
+            background: #faf8f5;
+        }
+
+        .room-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #faf8f5;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            font-size: 16px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .input-group input[type="text"],
+        .input-group input[type="number"],
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0d8cc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .room-config {
+            border: 2px solid #e0d8cc;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #fdfcfa;
+        }
+
+        .room-config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .room-config-header h4 {
+            color: #8b7355;
+            font-size: 18px;
+        }
+
+        .delete-room-btn {
+            background: #d88a8a;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .allergy-modal-content {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .allergy-input-group {
+            margin-bottom: 15px;
+        }
+
+        .allergy-input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .allergy-input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0d8cc;
+            border-radius: 8px;
+            font-size: 14px;
         }
 
         .btn {
             padding: 12px 24px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            margin: 5px;
+            width: 100%;
+            margin-top: 8px;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #8b7355 0%, #a08968 100%);
             color: white;
+            box-shadow: 0 2px 8px rgba(139, 115, 85, 0.3);
         }
 
         .btn-primary:active {
-            transform: scale(0.98);
+            transform: translateY(2px);
+            box-shadow: 0 1px 4px rgba(139, 115, 85, 0.3);
         }
 
         .btn-secondary {
@@ -159,213 +302,300 @@
             color: #666;
         }
 
-        .btn-danger {
-            background: #d9534f;
+        /* 営業ページ */
+        .time-group {
+            margin-bottom: 4px;
+        }
+
+        .time-header {
+            background: linear-gradient(135deg, #8b7355 0%, #a08968 100%);
             color: white;
-        }
-
-        /* Orderページ */
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .order-header .btn {
-            padding: 8px 16px;
-            font-size: 14px;
-            margin: 0;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(139, 115, 85, 0.3);
         }
 
         .room-card {
             background: white;
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            padding: 5px;
+            margin-bottom: 4px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .room-info {
+            min-width: 130px;
+            max-width: 130px;
+            padding-right: 10px;
+            border-right: 2px solid #f0ebe3;
         }
 
         .room-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #e0d8cc;
-            flex-wrap: wrap;
-            gap: 8px;
+            margin-bottom: 3px;
         }
 
         .room-name {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #8b7355;
+            line-height: 1.2;
         }
 
-        .room-info {
-            font-size: 13px;
-            color: #666;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
+        .room-plan {
+            font-size: 10px;
+            color: #999;
+            margin-top: 2px;
+            line-height: 1.2;
         }
 
-        .eating-speed-badge {
-            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
+        .room-people {
+            font-size: 24px;
             font-weight: bold;
-            font-size: 13px;
+            color: #8b7355;
+            line-height: 1;
+        }
+
+        .speed-memo-row {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+            gap: 5px;
+        }
+
+        .eating-speed {
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 2px 4px rgba(74, 144, 226, 0.3);
+            border: 2px solid;
+            text-align: center;
+            min-width: 45px;
+            flex-shrink: 0;
         }
 
-        .eating-speed-badge:active {
+        .eating-speed.speed-vf {
+            background: #ffebee;
+            color: #c62828;
+            border-color: #c62828;
+        }
+
+        .eating-speed.speed-f {
+            background: #ffebee;
+            color: #d32f2f;
+            border-color: #d32f2f;
+        }
+
+        .eating-speed.speed-lf {
+            background: #fff3e0;
+            color: #ef6c00;
+            border-color: #ef6c00;
+        }
+
+        .eating-speed.speed-n {
+            background: #f5f5f5;
+            color: #666;
+            border-color: #999;
+        }
+
+        .eating-speed.speed-ls {
+            background: #e1f5fe;
+            color: #0277bd;
+            border-color: #0277bd;
+        }
+
+        .eating-speed.speed-s {
+            background: #e3f2fd;
+            color: #1565c0;
+            border-color: #1565c0;
+        }
+
+        .eating-speed.speed-vs {
+            background: #e8eaf6;
+            color: #283593;
+            border-color: #283593;
+        }
+
+        .eating-speed:active {
             transform: scale(0.95);
         }
 
-        .special-icons {
+        .course-grid {
             display: flex;
-            gap: 6px;
+            gap: 30px;
+            flex: 1;
+            flex-wrap: nowrap;
+            align-items: flex-start;
+            justify-content: flex-start;
+            overflow-x: auto;
         }
 
-        .special-icon {
-            background: #fff3cd;
-            color: #856404;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .course-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-
-        .course-table th {
-            background: #f8f8f8;
-            padding: 6px 4px;
+        .course-item {
             text-align: center;
-            font-weight: bold;
-            color: #666;
-            border-bottom: 2px solid #e0d8cc;
-            font-size: 11px;
-        }
-
-        .course-table td {
-            padding: 6px 4px;
-            text-align: center;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .course-name {
-            text-align: left;
-            font-weight: bold;
-            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             position: relative;
         }
 
-        .allergy-tag {
-            background: #ff6b6b;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 10px;
-            margin-left: 6px;
+        .course-name {
+            font-size: 9px;
+            color: #666;
+            margin-bottom: 2px;
             font-weight: bold;
+            line-height: 1.1;
         }
 
-        /* ステータスボタン */
-        .status-btn {
-            width: 42px;
-            height: 42px;
+        .course-button {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            border: 3px solid #ddd;
-            background: white;
-            font-weight: bold;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
+            border: 2px solid #ddd;
+            background: #f5f5f5;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto;
-        }
-
-        .status-btn:active {
-            transform: scale(0.9);
-        }
-
-        .status-btn.none {
-            color: #999;
-            border-color: #ddd;
-        }
-
-        .status-btn.waiting {
-            background: #fff3cd;
-            border-color: #ffc107;
-            color: #856404;
-        }
-
-        .status-btn.ordered {
-            background: #d1ecf1;
-            border-color: #17a2b8;
-            color: #0c5460;
-        }
-
-        .status-btn.served {
-            background: #d4edda;
-            border-color: #28a745;
-            color: #155724;
-        }
-
-        .time-cell {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 2px;
+            position: relative;
+        }
+
+        .course-button.status-wait {
+            background: #fff9e6;
+            border-color: #f5d742;
             color: #333;
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background 0.2s;
         }
 
-        .time-cell:hover {
-            background: #f0f0f0;
+        .course-button.status-order {
+            background: #ffe8d6;
+            border-color: #ff9f5a;
+            color: #333;
         }
 
-        .staff-cell {
-            font-size: 12px;
+        .course-button.status-meat {
+            background: #ffe0e6;
+            border-color: #ff6b9d;
+            color: #333;
+        }
+
+        .course-button.status-serve {
+            background: #d4f4dd;
+            border-color: #52c97a;
+            color: #333;
+        }
+
+        .course-info {
+            font-size: 10px;
             color: #666;
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background 0.2s;
+            min-height: 14px;
+            line-height: 1.1;
         }
 
-        .staff-cell:hover {
-            background: #f0f0f0;
-        }
-
-        .w-count-cell {
-            font-size: 13px;
+        .time-display {
             font-weight: bold;
-            color: #d9534f;
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background 0.2s;
+            color: #8b7355;
+            font-size: 11px;
         }
 
-        .w-count-cell:hover {
-            background: #f0f0f0;
+        .staff-display {
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            transform: translate(-10px, calc(-50% + 0px));
+            font-size: 7.7px;
+            color: #ffffff;
+            background: #4caf50;
+            padding: 2px 5px;
+            border-radius: 6px;
+            white-space: nowrap;
+            z-index: 15;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .allergy-badge {
+            font-size: 7px;
+            color: #d88a8a;
+            font-weight: bold;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: white;
+            padding: 1px 3px;
+            border-radius: 6px;
+            border: 1px solid #d88a8a;
+            white-space: nowrap;
+            z-index: 20;
+        }
+
+        .cake-badge {
+            display: inline-block;
+            background: #ffd6e0;
+            color: #d5006d;
+            padding: 1px 4px;
+            border-radius: 6px;
+            font-size: 8px;
+            font-weight: bold;
+            margin-left: 2px;
+        }
+
+        .pressed-time {
+            font-size: 7px;
+            color: #999;
+            margin-top: 1px;
+        }
+
+        .w-count-display {
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            transform: translate(-15px, calc(-50% + 15px));
+            font-size: 9px;
+            font-weight: bold;
+            color: #ffffff;
+            background: #ff1744;
+            padding: 2px 6px;
+            border-radius: 6px;
+            white-space: nowrap;
+            z-index: 15;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .room-memo {
+            font-size: 11px;
+            color: #1976d2;
+            font-weight: bold;
+            margin-left: 8px;
+            padding: 2px 6px;
+            background: rgba(25, 118, 210, 0.1);
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .additional-dish-name {
+            color: #8b7355;
+            font-weight: bold;
+        }
+
+        .quantity-badge {
+            font-size: 7px;
+            background: #e8e8e8;
+            padding: 1px 4px;
+            border-radius: 4px;
+            margin-left: 2px;
         }
 
         /* モーダル */
@@ -376,7 +606,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.5);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -388,12 +618,11 @@
 
         .modal-content {
             background: white;
-            border-radius: 15px;
-            padding: 25px;
+            border-radius: 20px;
+            padding: 30px;
             max-width: 90%;
-            max-height: 80%;
+            max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
         }
 
         .modal-title {
@@ -406,16 +635,16 @@
 
         .modal-buttons {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
+            margin-bottom: 15px;
         }
 
         .modal-btn {
-            padding: 15px;
-            border: 2px solid #8b7355;
-            border-radius: 10px;
+            padding: 18px;
+            border: 2px solid #e0d8cc;
+            border-radius: 12px;
             background: white;
-            color: #8b7355;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
@@ -423,376 +652,143 @@
         }
 
         .modal-btn:active {
-            background: #8b7355;
-            color: white;
-            transform: scale(0.95);
+            background: #f0ebe3;
+        }
+
+        .modal-close {
+            width: 100%;
+            padding: 15px;
+            background: #e0d8cc;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
         }
 
         .staff-select-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
         }
 
-        .allergy-modal-content {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .allergy-input-group {
-            margin-bottom: 15px;
-        }
-
-        .allergy-input-group label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        .allergy-input-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        /* 追加料理セクション */
-        .additional-dish-section {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 2px dashed #e0d8cc;
-        }
-
-        .additional-dish-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .additional-dish-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: #8b7355;
-        }
-
-        .add-dish-btn {
-            padding: 6px 12px;
-            background: #8b7355;
+        .undo-btn {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b7355 0%, #a08968 100%);
             color: white;
             border: none;
-            border-radius: 6px;
-            font-size: 12px;
+            font-size: 20px;
             cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            z-index: 50;
         }
 
-        .dish-input-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
-            align-items: center;
+        .undo-btn:active {
+            transform: scale(0.95);
         }
 
-        .dish-input-row input[type="text"] {
-            flex: 2;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 13px;
-        }
-
-        .dish-input-row select {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 13px;
-        }
-
-        .dish-input-row input[type="text"]:last-of-type {
-            flex: 3;
-        }
-
-        .delete-dish-btn {
-            padding: 6px 10px;
-            background: #d9534f;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 11px;
-            cursor: pointer;
-        }
-
-        /* カスタマイズ部屋入力行 */
-        .custom-room-input {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 10px;
-            align-items: center;
-        }
-
-        .custom-room-input input {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 13px;
-        }
-
-        .custom-room-input button {
-            padding: 8px 16px;
-            background: #8b7355;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 13px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        /* カスタマイズスタッフ */
-        .custom-staff-section {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 2px dashed #e0d8cc;
-        }
-
-        .custom-staff-input {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .custom-staff-input input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .custom-staff-input button {
-            padding: 10px 20px;
-            background: #8b7355;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .custom-staff-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .custom-staff-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px;
-            background: #f9f9f9;
-            border-radius: 6px;
-            border: 1px solid #e0d8cc;
-        }
-
-        .custom-staff-item input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-        }
-
-        .custom-staff-item span {
-            flex: 1;
-            font-size: 13px;
-        }
-
-        .custom-staff-item button {
-            padding: 4px 8px;
-            background: #d9534f;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 11px;
-            cursor: pointer;
-        }
-
-        /* レスポンシブ調整 */
-        @media (max-width: 768px) and (orientation: portrait) {
-            .course-table {
-                font-size: 12px;
-            }
-            
-            .course-table th {
-                padding: 5px 2px;
-                font-size: 10px;
-            }
-            
-            .course-table td {
-                padding: 5px 2px;
-            }
-            
-            .status-btn {
-                width: 38px;
-                height: 38px;
-                font-size: 13px;
-            }
-            
-            .room-name {
-                font-size: 16px;
+        @media (max-width: 768px) {
+            .course-button {
+                width: 48px;
+                height: 48px;
+                font-size: 14px;
             }
             
             .room-info {
-                font-size: 12px;
+                min-width: 120px;
+                max-width: 120px;
             }
-        }
 
-        @media (max-width: 820px) and (orientation: portrait) {
-            .status-btn {
-                width: 40px;
-                height: 40px;
+            .eating-speed {
                 font-size: 14px;
-                border-width: 2.5px;
-            }
-            
-            .time-cell {
-                font-size: 13px;
-            }
-            
-            .staff-cell {
-                font-size: 11px;
-            }
-            
-            .w-count-cell {
-                font-size: 12px;
+                padding: 3px 8px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- タブボタン -->
         <div class="tab-buttons">
-            <button class="tab-btn active" onclick="switchTab('index')">Index</button>
-            <button class="tab-btn" onclick="switchTab('order')">Order</button>
+            <button class="tab-btn active" onclick="switchTab('index')">設定 (Index)</button>
+            <button class="tab-btn" onclick="switchTab('order')">営業 (Order)</button>
         </div>
 
-        <!-- Index Page -->
+        <!-- 設定ページ -->
         <div id="index-page" class="page active">
             <div class="section">
-                <div class="section-title">部屋設定</div>
+                <div class="section-title">1. 本日の設定</div>
+                <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
+                    チェックした部屋だけが営業ページに反映される設定です。
+                </p>
                 <table class="settings-table">
                     <thead>
                         <tr>
-                            <th style="width: 50px;">使用</th>
+                            <th style="width: 50px;">選</th>
                             <th style="width: 100px;">部屋名</th>
-                            <th style="width: 60px;">人数</th>
+                            <th style="width: 80px;">人数</th>
                             <th style="width: 120px;">プラン</th>
-                            <th style="width: 80px;">開始時刻</th>
-                            <th style="width: 80px;">アレルギー</th>
-                            <th style="width: 60px;">🎂</th>
-                            <th style="width: 60px;">🍽️</th>
-                            <th>メモ</th>
+                            <th style="width: 100px;">夕食開始</th>
+                            <th style="width: 180px;">お祝い・アレルギー</th>
+                            <th style="width: 100px;">部屋メモ</th>
                         </tr>
                     </thead>
-                    <tbody id="room-settings-table"></tbody>
+                    <tbody id="room-settings-table">
+                        <!-- 動的に生成 -->
+                    </tbody>
                 </table>
-                
-                <!-- カスタマイズ部屋追加 -->
+            </div>
+
+            <div class="section">
+                <div class="section-title">7. 追加料理</div>
+                <div id="additional-dishes">
+                    <!-- 追加料理が動的に追加される -->
+                </div>
+                <button class="btn btn-secondary" onclick="addAdditionalDish()">追加料理を追加</button>
+            </div>
+
+            <div class="section">
+                <div class="section-title">9. スタッフ（出勤者）選択</div>
+                <div class="room-grid" id="staff-checkboxes">
+                    <!-- スタッフチェックボックス -->
+                </div>
                 <div style="margin-top: 15px;">
-                    <div class="custom-room-input">
-                        <input type="text" id="custom-room-name" placeholder="新しい部屋名" style="flex: 1;">
-                        <button onclick="addCustomRoom()">部屋を追加</button>
-                    </div>
+                    <label style="font-weight: bold; margin-bottom: 8px; display: block;">カスタマイズスタッフ</label>
+                    <input type="text" id="custom-staff-input" placeholder="スタッフ名を入力" 
+                           style="width: 100%; padding: 12px; border: 2px solid #e0d8cc; border-radius: 8px; font-size: 16px;">
+                    <button class="btn btn-secondary" onclick="addCustomStaff()" style="margin-top: 10px;">
+                        カスタマイズスタッフを追加
+                    </button>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-title">スタッフ設定</div>
-                <table class="settings-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 50px;">使用</th>
-                            <th>スタッフ名</th>
-                        </tr>
-                    </thead>
-                    <tbody id="staff-settings-table"></tbody>
-                </table>
-                
-                <!-- カスタマイズスタッフ追加 -->
-                <div class="custom-staff-section">
-                    <div style="font-size: 14px; font-weight: bold; color: #8b7355; margin-bottom: 10px;">
-                        カスタマイズスタッフ
-                    </div>
-                    <div class="custom-staff-input">
-                        <input type="text" id="custom-staff-input" placeholder="新しいスタッフ名">
-                        <button onclick="addCustomStaff()">追加</button>
-                    </div>
-                    <div class="custom-staff-list" id="custom-staff-list"></div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="additional-dish-section">
-                    <div class="additional-dish-header">
-                        <div class="additional-dish-title">追加料理</div>
-                        <button class="add-dish-btn" onclick="addDish()">＋ 料理を追加</button>
-                    </div>
-                    <div id="additional-dishes-list"></div>
-                </div>
-            </div>
-
-            <div style="text-align: center; padding: 20px;">
-                <button class="btn btn-primary" onclick="saveSettings()">設定を保存してOrderへ</button>
-                <button class="btn btn-secondary" onclick="resetSettings()">初期化</button>
-            </div>
+            <button class="btn btn-primary" onclick="saveSettings()">保存して営業ページへ</button>
+            <button class="btn btn-secondary" onclick="resetSettings()">初期化</button>
         </div>
 
-        <!-- Order Page -->
+        <!-- 営業ページ -->
         <div id="order-page" class="page">
-            <div class="order-header">
-                <button class="btn btn-secondary" onclick="undoLastAction()">↩ Undo</button>
-                <button class="btn btn-danger" onclick="resetOrderState()">🔄 Reset</button>
+            <div id="order-content">
+                <!-- 営業内容が動的に生成される -->
             </div>
-            <div id="order-content"></div>
+            <button class="undo-btn" onclick="undoLastAction()">↶</button>
         </div>
     </div>
 
     <!-- モーダル -->
-    <div id="modal" class="modal" onclick="if(event.target === this) closeModal()">
+    <div id="modal" class="modal">
         <div class="modal-content">
-            <div id="modal-title" class="modal-title"></div>
+            <div class="modal-title" id="modal-title"></div>
             <div id="modal-body"></div>
+            <button class="modal-close" onclick="closeModal()">閉じる</button>
         </div>
     </div>
-
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
-
-        // Firebase設定
-        const firebaseConfig = {
-            apiKey: "AIzaSyAoyApbQzAlSYsM1MBDPZ68I5EaJ3M_yE8",
-            authDomain: "restaurant-order-system-8855a.firebaseapp.com",
-            databaseURL: "https://restaurant-order-system-8855a-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "restaurant-order-system-8855a",
-            storageBucket: "restaurant-order-system-8855a.firebasestorage.app",
-            messagingSenderId: "695114713080",
-            appId: "1:695114713080:web:de13ca2e7e448e92fb380d"
-        };
-
-        // Firebase初期化
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-
-        // グローバルに公開
-        window.firebaseDB = database;
-        window.firebaseRef = ref;
-        window.firebaseSet = set;
-        window.firebaseOnValue = onValue;
-    </script>
 
     <script>
         // データ構造
@@ -869,10 +865,10 @@
             initOrderState();
             saveOrderState();
             switchTab('order');
-            alert('設定を保存しました!');
+            alert('設定を保存しました！');
         }
 
-        // 設定を静かに保存(アラートやタブ切り替えなし)
+        // 設定を静かに保存（アラートやタブ切り替えなし）
         function saveSettingsQuiet() {
             localStorage.setItem('orderSettings', JSON.stringify(settings));
             initOrderState();
@@ -881,7 +877,7 @@
 
         // 設定初期化
         function resetSettings() {
-            if (!confirm('初期状態に戻しますか?\n(部屋・スタッフは全選択、人数2名、時間18:00、プランはスタンダードになります)')) {
+            if (!confirm('初期状態に戻しますか？\n（部屋・スタッフは全選択、人数2名、時間18:00、プランはスタンダードになります）')) {
                 return;
             }
             
@@ -906,7 +902,7 @@
             
             localStorage.setItem('orderSettings', JSON.stringify(settings));
             renderIndexPage();
-            alert('初期化しました!');
+            alert('初期化しました！');
         }
 
         // Order状態初期化
@@ -935,7 +931,7 @@
                 // 追加料理
                 const roomIndex = room.isCustom ? 
                     'custom-' + settings.customRooms.indexOf(room) : 
-                    String(settings.rooms.indexOf(room));  // 文字列に変換!
+                    String(settings.rooms.indexOf(room));  // 文字列に変換！
                 
                 settings.additionalDishes.forEach(dish => {
                     if (dish.rooms.includes(roomIndex)) {
@@ -951,9 +947,8 @@
             });
         }
 
-        // Order状態保存 (Firebaseに同期)
+        // Order状態保存
         function saveOrderState() {
-            // ローカルストレージに保存
             localStorage.setItem('orderState', JSON.stringify(orderState));
             
             // Firebaseに保存
@@ -971,7 +966,7 @@
             const tableBody = document.getElementById('room-settings-table');
             tableBody.innerHTML = '';
             
-            // 全ての部屋(固定＋カスタム)
+            // 全ての部屋（固定＋カスタム）
             const allRooms = [...settings.rooms, ...settings.customRooms];
             
             allRooms.forEach((room, index) => {
@@ -1011,322 +1006,503 @@
                     </td>
                     <td>
                         <select onchange="${isCustomRoom ? `updateCustomRoomTime(${settings.customRooms.indexOf(room)}, this.value)` : `updateRoomTime(${actualIndex}, this.value)`}">
-                            ${generateTimeOptions(room.time)}
+                            <option value="18:00" ${room.time === '18:00' ? 'selected' : ''}>18:00</option>
+                            <option value="18:30" ${room.time === '18:30' ? 'selected' : ''}>18:30</option>
+                            <option value="19:00" ${room.time === '19:00' ? 'selected' : ''}>19:00</option>
                         </select>
                     </td>
                     <td>
-                        <button class="btn btn-secondary" style="padding: 6px 10px; font-size: 11px; margin: 0;" 
-                                onclick="showAllergyModal(${isCustomRoom ? settings.customRooms.indexOf(room) : actualIndex}, ${isCustomRoom})">
-                            設定
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" ${room.hasCake ? 'checked' : ''} 
+                                       onchange="${isCustomRoom ? `updateCustomRoomCake(${settings.customRooms.indexOf(room)}, this.checked)` : `updateRoomCake(${actualIndex}, this.checked)`}">
+                                ケーキ
+                            </label>
+                            <label>
+                                <input type="checkbox" ${room.hasPlate ? 'checked' : ''} 
+                                       onchange="${isCustomRoom ? `updateCustomRoomPlate(${settings.customRooms.indexOf(room)}, this.checked)` : `updateRoomPlate(${actualIndex}, this.checked)`}">
+                                プレート
+                            </label>
+                        </div>
+                        <button class="allergy-btn" style="margin-top: 5px;" 
+                                onclick="${isCustomRoom ? `showAllergyModal(${settings.customRooms.indexOf(room)}, true)` : `showAllergyModal(${actualIndex}, false)`}">
+                            アレルギー詳細設定
                         </button>
                     </td>
                     <td>
-                        <input type="checkbox" ${room.hasCake ? 'checked' : ''} 
-                               onchange="${isCustomRoom ? `updateCustomRoomCake(${settings.customRooms.indexOf(room)}, this.checked)` : `updateRoomCake(${actualIndex}, this.checked)`}">
-                    </td>
-                    <td>
-                        <input type="checkbox" ${room.hasPlate ? 'checked' : ''} 
-                               onchange="${isCustomRoom ? `updateCustomRoomPlate(${settings.customRooms.indexOf(room)}, this.checked)` : `updateRoomPlate(${actualIndex}, this.checked)`}">
-                    </td>
-                    <td>
-                        <input type="text" value="${room.memo || ''}" placeholder="メモ" 
+                        <input type="text" maxlength="10" value="${room.memo || ''}" placeholder="メモ"
                                onchange="${isCustomRoom ? `updateCustomRoomMemo(${settings.customRooms.indexOf(room)}, this.value)` : `updateRoomMemo(${actualIndex}, this.value)`}">
                     </td>
                 `;
-                
                 tableBody.appendChild(tr);
             });
-
-            // スタッフ設定テーブル
-            const staffTableBody = document.getElementById('staff-settings-table');
-            staffTableBody.innerHTML = '';
             
+            // カスタマイズ部屋追加行
+            const addRow = document.createElement('tr');
+            addRow.className = 'custom-input-row';
+            addRow.innerHTML = `
+                <td colspan="7" style="text-align: center; padding: 15px;">
+                    <button class="btn btn-secondary" onclick="addCustomRoom()" style="width: auto; padding: 10px 30px;">
+                        ＋ カスタマイズ部屋を追加
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(addRow);
+
+            // スタッフチェックボックス
+            const staffCheckboxes = document.getElementById('staff-checkboxes');
+            staffCheckboxes.innerHTML = '';
+            
+            // 固定スタッフ
             settings.staff.forEach((staff, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>
-                        <input type="checkbox" ${staff.enabled ? 'checked' : ''} onchange="toggleStaff(${index})">
-                    </td>
-                    <td>${staff.name}</td>
+                const div = document.createElement('div');
+                div.className = 'checkbox-item';
+                div.innerHTML = `
+                    <input type="checkbox" id="staff-${index}" ${staff.enabled ? 'checked' : ''} 
+                           onchange="toggleStaff(${index})">
+                    <label for="staff-${index}">${staff.name}</label>
                 `;
-                staffTableBody.appendChild(tr);
+                staffCheckboxes.appendChild(div);
             });
-
-            // カスタマイズスタッフリスト
-            const customStaffList = document.getElementById('custom-staff-list');
-            customStaffList.innerHTML = '';
             
+            // カスタムスタッフ
             settings.customStaff.forEach((staff, index) => {
                 const div = document.createElement('div');
-                div.className = 'custom-staff-item';
+                div.className = 'checkbox-item';
+                div.style.background = '#faf8f5';
                 div.innerHTML = `
-                    <input type="checkbox" ${staff.enabled ? 'checked' : ''} onchange="toggleCustomStaff(${index})">
-                    <span>${staff.name}</span>
-                    <button onclick="deleteCustomStaff(${index})">削除</button>
+                    <input type="checkbox" id="custom-staff-${index}" ${staff.enabled ? 'checked' : ''} 
+                           onchange="toggleCustomStaff(${index})">
+                    <label for="custom-staff-${index}">${staff.name}</label>
+                    <button class="delete-room-btn" style="margin-left: auto; padding: 6px 12px; font-size: 12px;" 
+                            onclick="deleteCustomStaff(${index})">削除</button>
                 `;
-                customStaffList.appendChild(div);
+                staffCheckboxes.appendChild(div);
             });
 
-            // 追加料理リスト
-            const dishesList = document.getElementById('additional-dishes-list');
-            dishesList.innerHTML = '';
+            // 追加料理
+            renderAdditionalDishes();
+        }
+
+        // 追加料理レンダリング
+        function renderAdditionalDishes() {
+            const container = document.getElementById('additional-dishes');
+            container.innerHTML = '';
+            
+            const allRooms = [
+                ...settings.rooms.filter(r => r.enabled),
+                ...settings.customRooms.filter(r => r.enabled)
+            ];
             
             settings.additionalDishes.forEach((dish, index) => {
                 const div = document.createElement('div');
-                div.className = 'dish-input-row';
+                div.className = 'room-config';
                 div.innerHTML = `
-                    <input type="text" value="${dish.name}" onchange="updateDishName(${index}, this.value)" placeholder="料理名">
-                    <select onchange="updateDishPosition(${index}, this.value)">
-                        <option value="before" ${dish.position === 'before' ? 'selected' : ''}>ご飯の前</option>
-                        <option value="after" ${dish.position === 'after' ? 'selected' : ''}>ご飯の後</option>
-                    </select>
-                    <input type="text" value="${dish.rooms.join(',')}" onchange="updateDishRooms(${index}, this.value)" placeholder="部屋番号(カンマ区切り)">
-                    <button class="delete-dish-btn" onclick="deleteDish(${index})">削除</button>
+                    <div class="room-config-header">
+                        <h4>追加料理 ${index + 1}</h4>
+                        <button class="delete-room-btn" onclick="removeAdditionalDish(${index})">削除</button>
+                    </div>
+                    <div class="input-group">
+                        <label>品名</label>
+                        <input type="text" value="${dish.name}" 
+                               onchange="updateDishName(${index}, this.value)">
+                    </div>
+                    <div class="input-group">
+                        <label>数量</label>
+                        <input type="number" min="1" max="10" value="${dish.quantity}" 
+                               onchange="updateDishQuantity(${index}, this.value)">
+                    </div>
+                    <div class="input-group">
+                        <label>対象部屋</label>
+                        ${allRooms.map((room, rIndex) => {
+                            // 実際のインデックスを取得（固定部屋かカスタム部屋か）
+                            const actualIndex = room.isCustom ? 
+                                'custom-' + settings.customRooms.indexOf(room) : 
+                                String(settings.rooms.indexOf(room));  // 文字列に変換！
+                            const checked = dish.rooms.includes(actualIndex) ? 'checked' : '';
+                            return `
+                                <label style="display: inline-block; margin-right: 15px; font-weight: normal;">
+                                    <input type="checkbox" ${checked} 
+                                           onchange="toggleDishRoom(${index}, '${actualIndex}', this.checked)">
+                                    ${room.name}
+                                </label>
+                            `;
+                        }).join('')}
+                    </div>
+                    <div class="input-group">
+                        <label>挿入位置</label>
+                        ${dish.rooms.map(roomId => {
+                            const room = roomId.toString().startsWith('custom-') ? 
+                                settings.customRooms[parseInt(roomId.split('-')[1])] :
+                                settings.rooms[parseInt(roomId)];  // 文字列を数値に変換してインデックスとして使用
+                            if (!room) return '';
+                            const courses = PLANS[room.plan];
+                            const currentPos = dish.positions[roomId] || courses[0];
+                            return `
+                                <div style="margin: 8px 0;">
+                                    <label style="font-weight: normal; font-size: 14px;">${room.name}:</label>
+                                    <select onchange="updateDishPosition(${index}, '${roomId}', this.value)" 
+                                            style="margin-top: 5px;">
+                                        ${courses.map(c => 
+                                            `<option value="${c}" ${currentPos === c ? 'selected' : ''}>${c}の前</option>`
+                                        ).join('')}
+                                    </select>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
                 `;
-                dishesList.appendChild(div);
+                container.appendChild(div);
             });
         }
 
-        // 時間選択肢生成
-        function generateTimeOptions(selectedTime) {
-            const options = [];
-            for (let h = 17; h <= 23; h++) {
-                for (let m = 0; m < 60; m += 30) {
-                    const time = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-                    options.push(`<option value="${time}" ${time === selectedTime ? 'selected' : ''}>${time}</option>`);
-                }
-            }
-            return options.join('');
+        function addAdditionalDish() {
+            settings.additionalDishes.push({
+                name: '',
+                quantity: 1,
+                rooms: [],
+                positions: {}
+            });
+            saveSettingsQuiet();
+            renderAdditionalDishes();
         }
 
-        // Orderページレンダリング
+        function removeAdditionalDish(index) {
+            settings.additionalDishes.splice(index, 1);
+            saveSettingsQuiet();
+            renderAdditionalDishes();
+        }
+
+        function updateDishName(index, value) {
+            settings.additionalDishes[index].name = value;
+            saveSettingsQuiet();
+        }
+
+        function updateDishQuantity(index, value) {
+            settings.additionalDishes[index].quantity = parseInt(value);
+            saveSettingsQuiet();
+        }
+
+        function toggleDishRoom(dishIndex, roomId, checked) {
+            const dish = settings.additionalDishes[dishIndex];
+            if (checked) {
+                if (!dish.rooms.includes(roomId)) {
+                    dish.rooms.push(roomId);
+                    const room = roomId.toString().startsWith('custom-') ? 
+                        settings.customRooms[parseInt(roomId.split('-')[1])] :
+                        settings.rooms[parseInt(roomId)];  // 文字列を数値に変換してインデックスとして使用
+                    const courses = PLANS[room.plan];
+                    dish.positions[roomId] = courses[0];
+                }
+            } else {
+                dish.rooms = dish.rooms.filter(r => r !== roomId);
+                delete dish.positions[roomId];
+            }
+            saveSettingsQuiet();
+            renderAdditionalDishes();
+        }
+
+        function updateDishPosition(dishIndex, roomId, position) {
+            settings.additionalDishes[dishIndex].positions[roomId] = position;
+            saveSettingsQuiet();
+        }
+
+        // 営業ページレンダリング
         function renderOrderPage() {
             const content = document.getElementById('order-content');
             content.innerHTML = '';
-            
-            const allRooms = [...settings.rooms.filter(r => r.enabled), ...settings.customRooms.filter(r => r.enabled)];
-            
-            allRooms.forEach(room => {
-                if (!orderState[room.name]) {
-                    orderState[room.name] = { eatingSpeed: 'N', courses: {} };
-                }
 
-                const roomCard = document.createElement('div');
-                roomCard.className = 'room-card';
+            // 全ての有効な部屋（固定＋カスタム）
+            const allRooms = [
+                ...settings.rooms.filter(r => r.enabled),
+                ...settings.customRooms.filter(r => r.enabled)
+            ];
+
+            // 時間帯でグループ化
+            const timeGroups = {
+                '18:00': [],
+                '18:30': [],
+                '19:00': []
+            };
+
+            allRooms.forEach(room => {
+                if (timeGroups[room.time]) {
+                    timeGroups[room.time].push(room);
+                }
+            });
+
+            // 各時間帯を表示
+            Object.keys(timeGroups).forEach(time => {
+                if (timeGroups[time].length === 0) return;
+
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'time-group';
+                timeDiv.innerHTML = `<div class="time-header">${time} 開始</div>`;
+
+                timeGroups[time].forEach(room => {
+                    const roomDiv = createRoomCard(room);
+                    timeDiv.appendChild(roomDiv);
+                });
+
+                content.appendChild(timeDiv);
+            });
+
+            // 初期化ボタン
+            const resetBtn = document.createElement('button');
+            resetBtn.className = 'btn btn-secondary';
+            resetBtn.textContent = 'Order初期化';
+            resetBtn.onclick = resetOrderState;
+            resetBtn.style.marginTop = '20px';
+            content.appendChild(resetBtn);
+        }
+
+        function createRoomCard(room) {
+            const div = document.createElement('div');
+            div.className = 'room-card';
+
+            const baseCourses = PLANS[room.plan];
+            const roomState = orderState[room.name] || { eatingSpeed: 'N', courses: {} };
+
+            // 追加料理を含めたコース一覧を作成
+            let coursesWithAdditional = [];
+            
+            // 部屋のインデックスを取得
+            const roomIndex = room.isCustom ? 
+                'custom-' + settings.customRooms.indexOf(room) : 
+                String(settings.rooms.indexOf(room));  // 文字列に変換！
+            
+            // 各コースの前に追加料理があるかチェック
+            baseCourses.forEach((course, index) => {
+                // この料理の前に追加する料理を探す
+                const additionalForThisCourse = settings.additionalDishes.filter(dish => {
+                    return dish.rooms.includes(roomIndex) && dish.positions[roomIndex] === course;
+                });
                 
-                const eatingSpeed = orderState[room.name].eatingSpeed || 'N';
+                // 追加料理があれば先に追加
+                additionalForThisCourse.forEach(dish => {
+                    coursesWithAdditional.push({
+                        name: dish.name,
+                        isAdditional: true,
+                        quantity: dish.quantity
+                    });
+                });
                 
-                const specialIcons = [];
-                if (room.hasCake) specialIcons.push('<span class="special-icon">🎂</span>');
-                if (room.hasPlate) specialIcons.push('<span class="special-icon">🍽️</span>');
-                
-                roomCard.innerHTML = `
+                // 通常の料理を追加
+                coursesWithAdditional.push({
+                    name: course,
+                    isAdditional: false
+                });
+            });
+
+            let cakeInfo = '';
+
+            // 食べるスピードの色分けクラス
+            const speedClass = `speed-${roomState.eatingSpeed.toLowerCase()}`;
+
+            div.innerHTML = `
+                <div class="room-info">
                     <div class="room-header">
                         <div class="room-name">${room.name}</div>
-                        <div class="room-info">
-                            <span>${room.people}名</span>
-                            <span>${room.time}〜</span>
-                            <span>${room.plan}</span>
-                            ${room.memo ? `<span style="color: #d9534f;">📝 ${room.memo}</span>` : ''}
-                            <div class="eating-speed-badge" onclick="showEatingSpeedModal('${room.name}')">
-                                ${eatingSpeed}
-                            </div>
-                            ${specialIcons.length > 0 ? `<div class="special-icons">${specialIcons.join('')}</div>` : ''}
-                        </div>
+                        <div class="room-people">${room.people}名</div>
                     </div>
-                `;
-                
-                const table = document.createElement('table');
-                table.className = 'course-table';
-                
-                table.innerHTML = `
-                    <thead>
-                        <tr>
-                            <th style="width: 120px;">料理</th>
-                            <th style="width: 60px;">ステータス</th>
-                            <th style="width: 70px;">提供時刻</th>
-                            <th style="width: 60px;">スタッフ</th>
-                            <th style="width: 50px;">W数</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                `;
-                
-                const tbody = table.querySelector('tbody');
-                const courses = PLANS[room.plan];
-                
-                // 通常の料理
-                courses.forEach(course => {
-                    if (!orderState[room.name].courses[course]) {
-                        orderState[room.name].courses[course] = {
-                            status: 'none',
-                            time: null,
-                            pressedTime: null,
-                            staff: null,
-                            wCount: 0
-                        };
-                    }
-                    
-                    const state = orderState[room.name].courses[course];
-                    const allergy = room.allergies[course];
-                    
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="course-name">
-                            ${course}
-                            ${allergy ? `<span class="allergy-tag">${allergy}</span>` : ''}
-                        </td>
-                        <td>
-                            <button class="status-btn ${state.status}" onclick="toggleStatus('${room.name}', '${course}')">
-                                ${getStatusText(state.status)}
-                            </button>
-                        </td>
-                        <td class="time-cell" onclick="showTimeModal('${room.name}', '${course}')">
-                            ${state.time || '-'}
-                        </td>
-                        <td class="staff-cell" onclick="showStaffModal('${room.name}', '${course}')">
-                            ${state.staff || '-'}
-                        </td>
-                        <td class="w-count-cell" onclick="showWCountModal('${room.name}', '${course}')">
-                            ${state.wCount > 0 ? `W×${state.wCount}` : '-'}
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
+                    <div class="room-plan">${room.plan}</div>
+                    <div class="speed-memo-row">
+                        <div class="eating-speed ${speedClass}" onclick="showEatingSpeedModal('${room.name}')">
+                            ${roomState.eatingSpeed}
+                        </div>
+                        ${room.memo ? `<div class="room-memo">${room.memo}</div>` : ''}
+                    </div>
+                </div>
+                <div class="course-grid" id="courses-${room.name}">
+                    ${coursesWithAdditional.map(courseObj => {
+                        if (courseObj.isAdditional) {
+                            return createAdditionalCourseButton(room, courseObj.name, courseObj.quantity, roomState.courses[courseObj.name]);
+                        } else {
+                            return createCourseButton(room, courseObj.name, roomState.courses[courseObj.name]);
+                        }
+                    }).join('')}
+                </div>
+            `;
 
-                // 追加料理(ご飯の前)
-                const roomIndex = room.isCustom ? 
-                    'custom-' + settings.customRooms.indexOf(room) : 
-                    String(settings.rooms.indexOf(room));
-                
-                const beforeDishes = settings.additionalDishes.filter(d => 
-                    d.position === 'before' && d.rooms.includes(roomIndex)
-                );
-                
-                beforeDishes.forEach(dish => {
-                    if (!orderState[room.name].courses[dish.name]) {
-                        orderState[room.name].courses[dish.name] = {
-                            status: 'none',
-                            time: null,
-                            pressedTime: null,
-                            staff: null,
-                            wCount: 0
-                        };
-                    }
-                    
-                    const state = orderState[room.name].courses[dish.name];
-                    const tr = document.createElement('tr');
-                    tr.style.background = '#fffbf0';
-                    tr.innerHTML = `
-                        <td class="course-name">${dish.name}</td>
-                        <td>
-                            <button class="status-btn ${state.status}" onclick="toggleStatus('${room.name}', '${dish.name}')">
-                                ${getStatusText(state.status)}
-                            </button>
-                        </td>
-                        <td class="time-cell" onclick="showTimeModal('${room.name}', '${dish.name}')">
-                            ${state.time || '-'}
-                        </td>
-                        <td class="staff-cell" onclick="showStaffModal('${room.name}', '${dish.name}')">
-                            ${state.staff || '-'}
-                        </td>
-                        <td class="w-count-cell" onclick="showWCountModal('${room.name}', '${dish.name}')">
-                            ${state.wCount > 0 ? `W×${state.wCount}` : '-'}
-                        </td>
-                    `;
-                    // ご飯の前に挿入
-                    const riceIndex = Array.from(tbody.children).findIndex(tr => 
-                        tr.querySelector('.course-name').textContent.trim() === 'ご飯'
-                    );
-                    if (riceIndex !== -1) {
-                        tbody.insertBefore(tr, tbody.children[riceIndex]);
-                    }
-                });
-
-                // 追加料理(ご飯の後)
-                const afterDishes = settings.additionalDishes.filter(d => 
-                    d.position === 'after' && d.rooms.includes(roomIndex)
-                );
-                
-                afterDishes.forEach(dish => {
-                    if (!orderState[room.name].courses[dish.name]) {
-                        orderState[room.name].courses[dish.name] = {
-                            status: 'none',
-                            time: null,
-                            pressedTime: null,
-                            staff: null,
-                            wCount: 0
-                        };
-                    }
-                    
-                    const state = orderState[room.name].courses[dish.name];
-                    const tr = document.createElement('tr');
-                    tr.style.background = '#fffbf0';
-                    tr.innerHTML = `
-                        <td class="course-name">${dish.name}</td>
-                        <td>
-                            <button class="status-btn ${state.status}" onclick="toggleStatus('${room.name}', '${dish.name}')">
-                                ${getStatusText(state.status)}
-                            </button>
-                        </td>
-                        <td class="time-cell" onclick="showTimeModal('${room.name}', '${dish.name}')">
-                            ${state.time || '-'}
-                        </td>
-                        <td class="staff-cell" onclick="showStaffModal('${room.name}', '${dish.name}')">
-                            ${state.staff || '-'}
-                        </td>
-                        <td class="w-count-cell" onclick="showWCountModal('${room.name}', '${dish.name}')">
-                            ${state.wCount > 0 ? `W×${state.wCount}` : '-'}
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-                
-                roomCard.appendChild(table);
-                content.appendChild(roomCard);
-            });
+            return div;
         }
 
-        // ステータステキスト取得
-        function getStatusText(status) {
-            const statusMap = {
-                'none': '未',
-                'waiting': '待',
-                'ordered': '注',
-                'served': '提'
-            };
-            return statusMap[status] || '未';
+        function createCourseButton(room, course, state) {
+            if (!state) {
+                state = { status: 'none', time: null, pressedTime: null, staff: null, wCount: 0 };
+            }
+
+            const allergy = room.allergies[course] || '';
+            const allergyBadge = allergy ? `<div class="allergy-badge">${allergy}NG</div>` : '';
+            
+            let buttonText = '未';
+            let statusClass = '';
+            
+            if (state.status === 'wait') {
+                buttonText = state.time ? state.time.split(':')[1] : '待';
+                statusClass = 'status-wait';
+            } else if (state.status === 'order') {
+                buttonText = '注';
+                statusClass = 'status-order';
+            } else if (state.status === 'meat') {
+                buttonText = state.time ? state.time.split(':')[1] : '肉';
+                statusClass = 'status-meat';
+            } else if (state.status === 'serve') {
+                buttonText = '提';
+                statusClass = 'status-serve';
+            }
+
+            // ケーキ・プレートは丸ボタンの下に表示
+            const cakeBadge = (course === '甘味' && (room.hasCake || room.hasPlate)) ? 
+                `${room.hasCake ? '<span class="cake-badge">ケーキ</span>' : ''}${room.hasPlate ? '<span class="cake-badge">プレート</span>' : ''}` : '';
+
+            // スタッフとW数は丸ボタンの右側に表示
+            const staffBadge = state.staff ? `<div class="staff-display">${state.staff}</div>` : '';
+            const wCountBadge = state.wCount > 0 ? `<div class="w-count-display">W×${state.wCount}</div>` : '';
+
+            return `
+                <div class="course-item">
+                    <div class="course-name">${course}</div>
+                    <div class="course-button ${statusClass}" onclick="clickCourse('${room.name}', '${course}')">
+                        ${allergyBadge}
+                        ${wCountBadge}
+                        ${buttonText}
+                        ${staffBadge}
+                    </div>
+                    <div class="course-info">
+                        ${state.time ? `<div class="time-display">${state.time}</div>` : ''}
+                        ${cakeBadge}
+                    </div>
+                </div>
+            `;
         }
 
-        // ステータス切り替え
-        function toggleStatus(roomName, courseName) {
+        // 追加料理ボタン作成（通常の料理と同じ動作）
+        function createAdditionalCourseButton(room, dishName, quantity, state) {
+            if (!state) {
+                state = { status: 'none', time: null, pressedTime: null, staff: null, wCount: 0 };
+            }
+            
+            let buttonText = '未';
+            let statusClass = '';
+            
+            if (state.status === 'wait') {
+                buttonText = state.time ? state.time.split(':')[1] : '待';
+                statusClass = 'status-wait';
+            } else if (state.status === 'order') {
+                buttonText = '注';
+                statusClass = 'status-order';
+            } else if (state.status === 'serve') {
+                buttonText = '提';
+                statusClass = 'status-serve';
+            }
+
+            // スタッフは丸ボタン内に表示
+            const staffBadge = state.staff ? `<div class="staff-display">${state.staff}</div>` : '';
+            
+            return `
+                <div class="course-item">
+                    <div class="course-name additional-dish-name">
+                        ${dishName}
+                        <span class="quantity-badge">×${quantity}</span>
+                    </div>
+                    <div class="course-button ${statusClass}" onclick="clickCourse('${room.name}', '${dishName}')">
+                        ${buttonText}
+                        ${staffBadge}
+                    </div>
+                    <div class="course-info">
+                        ${state.time ? `<div class="time-display">${state.time}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // コースボタンクリック
+        function clickCourse(roomName, courseName) {
+            let room = settings.rooms.find(r => r.name === roomName);
+            if (!room) {
+                room = settings.customRooms.find(r => r.name === roomName);
+            }
+            if (!room) return;
+
             const state = orderState[roomName].courses[courseName];
             
-            // 前回の状態を保存
+            // 最後の操作を保存
             lastAction = {
                 room: roomName,
                 course: courseName,
-                previousState: { ...state }
+                previousState: JSON.parse(JSON.stringify(state))
             };
-            
-            const statusCycle = ['none', 'waiting', 'ordered', 'served'];
-            const currentIndex = statusCycle.indexOf(state.status);
-            const nextIndex = (currentIndex + 1) % statusCycle.length;
-            state.status = statusCycle[nextIndex];
-            
-            // 注文時刻を記録
-            if (state.status === 'ordered' && !state.pressedTime) {
-                const now = new Date();
-                const h = String(now.getHours()).padStart(2, '0');
-                const m = String(now.getMinutes()).padStart(2, '0');
-                state.pressedTime = `${h}:${m}`;
+
+            // 状態遷移
+            if (courseName === '果菜盛り' || courseName === 'しゃぶしゃぶ') {
+                // 果菜盛り、しゃぶしゃぶ: 未 → 待 → 提 → 未
+                if (state.status === 'none') {
+                    state.status = 'wait';
+                    state.pressedTime = getCurrentTime();
+                    showTimeModal(roomName, courseName);
+                } else if (state.status === 'wait') {
+                    state.status = 'serve';
+                    showStaffModal(roomName, courseName);
+                } else {
+                    state.status = 'none';
+                    state.time = null;
+                    state.pressedTime = null;
+                    state.staff = null;
+                }
+            } else if (courseName === 'ステーキ' || courseName === '煮物') {
+                // ステーキ、煮物: 未 → 待 → 肉 → 注 → 提 → 未
+                if (state.status === 'none') {
+                    state.status = 'wait';
+                    state.pressedTime = getCurrentTime();
+                    showTimeModal(roomName, courseName);
+                } else if (state.status === 'wait') {
+                    state.status = 'meat';
+                    showWCountModal(roomName, courseName);
+                } else if (state.status === 'meat') {
+                    state.status = 'order';
+                } else if (state.status === 'order') {
+                    state.status = 'serve';
+                    showStaffModal(roomName, courseName);
+                } else {
+                    state.status = 'none';
+                    state.time = null;
+                    state.pressedTime = null;
+                    state.staff = null;
+                    state.wCount = 0;
+                }
+            } else {
+                // 通常: 未 → 待 → 注 → 提 → 未
+                if (state.status === 'none') {
+                    state.status = 'wait';
+                    state.pressedTime = getCurrentTime();
+                    showTimeModal(roomName, courseName);
+                } else if (state.status === 'wait') {
+                    state.status = 'order';
+                } else if (state.status === 'order') {
+                    state.status = 'serve';
+                    showStaffModal(roomName, courseName);
+                } else {
+                    state.status = 'none';
+                    state.time = null;
+                    state.pressedTime = null;
+                    state.staff = null;
+                }
             }
-            
+
             saveOrderState();
             renderOrderPage();
         }
 
-        // 提供時刻選択モーダル
+        // 現在時刻取得
+        function getCurrentTime() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            return `${h}:${m}`;
+        }
+
+        // 時間選択モーダル
         function showTimeModal(roomName, courseName) {
             const modal = document.getElementById('modal');
             const title = document.getElementById('modal-title');
@@ -1375,7 +1551,7 @@
             const title = document.getElementById('modal-title');
             const body = document.getElementById('modal-body');
 
-            const room = settings.rooms.find(r => r.name === roomName) || settings.customRooms.find(r => r.name === roomName);
+            const room = settings.rooms.find(r => r.name === roomName);
             title.textContent = '焼き加減を選択';
             
             const options = ['なし', ...Array.from({length: room.people}, (_, i) => i + 1)];
@@ -1457,12 +1633,12 @@
 
         // Order初期化
         function resetOrderState() {
-            if (!confirm('Orderページをリセットしますか?')) return;
+            if (!confirm('Orderページをリセットしますか？')) return;
             
             initOrderState();
             saveOrderState();
             renderOrderPage();
-            alert('リセットしました!');
+            alert('リセットしました！');
         }
 
         // タブ切り替え
@@ -1522,16 +1698,8 @@
 
         // カスタマイズ部屋関連
         function addCustomRoom() {
-            const input = document.getElementById('custom-room-name');
-            const name = input.value.trim();
-            
-            if (!name) {
-                alert('部屋名を入力してください');
-                return;
-            }
-            
             settings.customRooms.push({
-                name: name,
+                name: '',
                 enabled: true,
                 people: 2,
                 time: '18:00',
@@ -1542,13 +1710,11 @@
                 hasPlate: false,
                 isCustom: true
             });
-            
-            input.value = '';
             renderIndexPage();
         }
 
         function deleteCustomRoom(index) {
-            if (confirm('このカスタマイズ部屋を削除しますか?')) {
+            if (confirm('このカスタマイズ部屋を削除しますか？')) {
                 settings.customRooms.splice(index, 1);
                 renderIndexPage();
             }
@@ -1610,7 +1776,7 @@
         }
 
         function deleteCustomStaff(index) {
-            if (confirm('このカスタマイズスタッフを削除しますか?')) {
+            if (confirm('このカスタマイズスタッフを削除しますか？')) {
                 settings.customStaff.splice(index, 1);
                 renderIndexPage();
             }
@@ -1698,37 +1864,35 @@
             renderOrderPage();
         }
 
-        // 追加料理関連
-        function addDish() {
-            settings.additionalDishes.push({
-                name: '',
-                position: 'before',
-                rooms: []
-            });
-            renderIndexPage();
-        }
-
-        function deleteDish(index) {
-            if (confirm('この追加料理を削除しますか?')) {
-                settings.additionalDishes.splice(index, 1);
-                renderIndexPage();
-            }
-        }
-
-        function updateDishName(index, value) {
-            settings.additionalDishes[index].name = value;
-        }
-
-        function updateDishPosition(index, value) {
-            settings.additionalDishes[index].position = value;
-        }
-
-        function updateDishRooms(index, value) {
-            settings.additionalDishes[index].rooms = value.split(',').map(s => s.trim()).filter(s => s);
-        }
-
         // 初期化実行
         init();
+    </script>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+
+        // Firebase設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyAoyApbQzAlSYsM1MBDPZ68I5EaJ3M_yE8",
+            authDomain: "restaurant-order-system-8855a.firebaseapp.com",
+            databaseURL: "https://restaurant-order-system-8855a-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "restaurant-order-system-8855a",
+            storageBucket: "restaurant-order-system-8855a.firebasestorage.app",
+            messagingSenderId: "695114713080",
+            appId: "1:695114713080:web:de13ca2e7e448e92fb380d"
+        };
+
+        // Firebase初期化
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // グローバルに公開
+        window.firebaseDB = database;
+        window.firebaseRef = ref;
+        window.firebaseSet = set;
+        window.firebaseOnValue = onValue;
     </script>
 </body>
 </html>
