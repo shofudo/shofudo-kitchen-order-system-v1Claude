@@ -188,58 +188,61 @@
         .order-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 6px;
         }
 
         /* 各注文アイテムをコンパクトに */
         .order-item {
             background: #f8f9fa;
-            padding: 10px;
+            padding: 8px 10px;
             border-radius: 10px;
             border-left: 4px solid #3498db;
         }
 
-        /* アイテムヘッダー: タグを横並びに配置 */
-        .item-header {
+        /* 部屋名とタグを横並びにする行 */
+        .room-row {
             display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
+            justify-content: space-between;
             align-items: center;
-            margin-bottom: 6px;
+            gap: 10px;
         }
 
-        /* 部屋名表示 - 小さめの補足情報として */
-        .room-names {
-            font-size: 14px;
-            color: #666;
-            font-weight: normal;
+        /* 左側の部屋名 */
+        .room-name-left {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
             display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .room-name-item {
-            display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
+            flex-shrink: 0;
         }
 
         .room-icon {
-            font-size: 14px;
+            font-size: 16px;
         }
 
-        /* 各タグのスタイル - より大きく目立つように */
+        /* 右側のタグ群 */
+        .tags-right {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        /* 各タグのスタイル - コンパクト化 */
         .detail-tag {
-            padding: 10px 16px;
-            border-radius: 20px;
-            font-size: 18px;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 15px;
             font-weight: bold;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             white-space: nowrap;
             flex-shrink: 0;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
         }
 
         /* アレルギータグ - 赤色で目立つように */
@@ -247,7 +250,7 @@
             background: #ff6b6b;
             color: white;
             border: 3px solid #c92a2a;
-            font-size: 20px;
+            font-size: 16px;
         }
 
         /* 火入れタグ(W×2など) - オレンジ色で目立つように */
@@ -255,7 +258,7 @@
             background: #ffa94d;
             color: #fff;
             border: 3px solid #ff8c00;
-            font-size: 20px;
+            font-size: 16px;
         }
 
         /* 担当者タグ */
@@ -692,73 +695,54 @@
                         <div class="order-list">
                 `;
                 
-                // 詳細情報(アレルギー・火入れ・担当者)でグループ化
-                const groupedOrders = {};
+                // 部屋ごとに1行で表示(グループ化なし)
                 sortedOrders.forEach(order => {
-                    const key = `${order.allergy || 'none'}_${order.wCount}_${order.staff || 'none'}`;
-                    if (!groupedOrders[key]) {
-                        groupedOrders[key] = {
-                            rooms: [],
-                            allergy: order.allergy,
-                            wCount: order.wCount,
-                            staff: order.staff
-                        };
-                    }
-                    groupedOrders[key].rooms.push(order.roomName);
-                });
-                
-                // 各グループを表示
-                Object.values(groupedOrders).forEach(group => {
                     html += `<div class="order-item">`;
                     
-                    // タグを先に表示(火入れ・アレルギー)
-                    const tags = [];
+                    // 部屋名とタグを横並びで表示
+                    html += `<div class="room-row">`;
                     
-                    // 火入れタグ(W×2など) - 最優先で表示
-                    if (group.wCount > 0) {
-                        tags.push(`
+                    // 左側: 部屋名
+                    html += `
+                        <div class="room-name-left">
+                            <span class="room-icon">🏠</span>
+                            ${order.roomName}
+                        </div>
+                    `;
+                    
+                    // 右側: タグ群
+                    html += `<div class="tags-right">`;
+                    
+                    // 火入れタグ(W×2など)
+                    if (order.wCount > 0) {
+                        html += `
                             <span class="detail-tag w-tag">
-                                🔥 W×${group.wCount}
+                                🔥 W×${order.wCount}
                             </span>
-                        `);
+                        `;
                     }
                     
-                    // アレルギータグ - 2番目に表示
-                    if (group.allergy) {
-                        tags.push(`
+                    // アレルギータグ
+                    if (order.allergy) {
+                        html += `
                             <span class="detail-tag allergy-tag">
-                                ${group.allergy}NG
+                                ${order.allergy}NG
                             </span>
-                        `);
+                        `;
                     }
                     
                     // 担当者タグ
-                    if (group.staff) {
-                        tags.push(`
-                            <span class="detail-tag staff-tag">
-                                👤 ${group.staff}
-                            </span>
-                        `);
-                    }
-                    
-                    // タグがある場合、item-headerで表示
-                    if (tags.length > 0) {
-                        html += `<div class="item-header">${tags.join('')}</div>`;
-                    }
-                    
-                    // 部屋名を小さく横並びで表示
-                    html += `<div class="room-names">`;
-                    group.rooms.forEach(roomName => {
+                    if (order.staff) {
                         html += `
-                            <div class="room-name-item">
-                                <span class="room-icon">🏠</span>
-                                ${roomName}
-                            </div>
+                            <span class="detail-tag staff-tag">
+                                👤 ${order.staff}
+                            </span>
                         `;
-                    });
-                    html += `</div>`;
+                    }
                     
-                    html += '</div>';
+                    html += `</div>`; // tags-right閉じ
+                    html += `</div>`; // room-row閉じ
+                    html += '</div>'; // order-item閉じ
                 });
                 
                 html += `
