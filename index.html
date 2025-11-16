@@ -950,6 +950,7 @@
                 const courses = PLANS[room.plan].courses;
                 orderState[room.name] = {
                     eatingSpeed: 'N',
+                    people: room.people,
                     courses: {}
                 };
                 
@@ -1729,6 +1730,13 @@
 
         function updateRoomPeople(index, value) {
             settings.rooms[index].people = parseInt(value);
+            
+            // orderStateにも反映
+            const roomName = settings.rooms[index].name;
+            if (orderState[roomName]) {
+                orderState[roomName].people = parseInt(value);
+                saveOrderState();
+            }
         }
 
         function updateRoomTime(index, value) {
@@ -1803,6 +1811,13 @@
 
         function updateCustomRoomPeople(index, value) {
             settings.customRooms[index].people = parseInt(value);
+            
+            // orderStateにも反映
+            const roomName = settings.customRooms[index].name;
+            if (roomName && orderState[roomName]) {
+                orderState[roomName].people = parseInt(value);
+                saveOrderState();
+            }
         }
 
         function updateCustomRoomTime(index, value) {

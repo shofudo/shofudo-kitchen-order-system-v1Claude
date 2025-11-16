@@ -636,18 +636,8 @@
                         dishGroups[courseName] = [];
                     }
                     
-                    // 部屋の設定情報を取得(localStorageから - 人数のみ)
-                    const settings = JSON.parse(localStorage.getItem('orderSettings') || '{}');
-                    let roomSettings = null;
-                    
-                    if (settings.rooms) {
-                        roomSettings = settings.rooms.find(r => r.name === roomName);
-                    }
-                    if (!roomSettings && settings.customRooms) {
-                        roomSettings = settings.customRooms.find(r => r.name === roomName);
-                    }
-                    
-                    const people = roomSettings ? roomSettings.people : 2;
+                    // 人数はFirebaseから取得(互換性のため、無い場合は2名)
+                    const people = roomData.people || 2;
                     // アレルギー情報はFirebaseから取得
                     const allergy = courseData.allergy || '';
                     
