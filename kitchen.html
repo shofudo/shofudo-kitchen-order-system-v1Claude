@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>キッチンディスプレイ</title>
+    
+    <!-- PWA設定 -->
+    <link rel="manifest" href="./manifest-kitchen.json">
+    <meta name="theme-color" content="#3498db">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="キッチン">
+    
     <style>
         * {
             margin: 0;
@@ -39,6 +47,42 @@
         .last-update {
             font-size: 14px;
             color: #7f8c8d;
+        }
+
+        /* 通知音テストボタン */
+        .sound-test-btn {
+            margin-top: 10px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sound-test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 107, 107, 0.5);
+        }
+
+        .sound-test-btn:active {
+            transform: translateY(0);
+        }
+
+        .sound-test-btn.success {
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+            box-shadow: 0 4px 12px rgba(81, 207, 102, 0.4);
+        }
+
+        .sound-test-btn.hidden {
+            display: none;
         }
 
         /* グリッドレイアウト - より多くのカードを表示 */
@@ -247,6 +291,9 @@
     <div class="header">
         <h1>🍳 キッチンディスプレイ</h1>
         <div class="last-update" id="last-update">接続中...</div>
+        <button class="sound-test-btn" id="sound-test-btn" onclick="testNotificationSound()">
+            🔔 通知音テスト
+        </button>
     </div>
 
     <div id="content">
@@ -334,6 +381,34 @@
         // ユーザーの最初のクリック/タッチで音声を有効化
         document.addEventListener('click', initAudioContext, { once: true });
         document.addEventListener('touchstart', initAudioContext, { once: true });
+
+        // 通知音テストボタンの処理
+        function testNotificationSound() {
+            const btn = document.getElementById('sound-test-btn');
+            
+            // AudioContextを初期化
+            initAudioContext();
+            
+            // 少し待ってから音を再生
+            setTimeout(() => {
+                if (audioInitialized) {
+                    // テスト音を再生
+                    playNotificationSound();
+                    
+                    // ボタンの表示を変更
+                    btn.innerHTML = '✅ 通知音が有効です';
+                    btn.classList.add('success');
+                    
+                    // 3秒後にボタンを非表示
+                    setTimeout(() => {
+                        btn.classList.add('hidden');
+                    }, 3000);
+                } else {
+                    // 初期化失敗
+                    alert('通知音の初期化に失敗しました。もう一度お試しください。');
+                }
+            }, 200);
+        }
 
         // 通知音を再生する関数(より目立つ音に改善)
         function playNotificationSound() {
@@ -668,6 +743,19 @@
                     ">🔄 再読み込み</button>
                 </div>
             `;
+        }
+    </script>
+    
+    <!-- Service Worker登録 -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then((registration) => {
+                    console.log('Service Worker登録成功:', registration.scope);
+                })
+                .catch((error) => {
+                    console.log('Service Worker登録失敗:', error);
+                });
         }
     </script>
 </body>
