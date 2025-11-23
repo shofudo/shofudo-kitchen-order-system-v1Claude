@@ -330,7 +330,7 @@
         .room-card {
             background: white;
             border-radius: 8px;
-            padding: 1px 5px; 
+            padding: 10px 5px; 
             margin-bottom: 2px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.08);
             display: flex;
@@ -743,6 +743,12 @@
 
         <!-- 設定ページ -->
         <div id="index-page" class="page active">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+                <button class="btn" onclick="resetSettings()" 
+                        style="width: auto; padding: 8px 20px; font-size: 12px; background: #ffebee; color: #d32f2f; border: 1px solid #ffcdd2;">
+                    ⚠️ 設定を初期化
+                </button>
+            </div>
             <div class="section">
                 <div class="section-title">1. 本日の設定</div>
                 <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
@@ -790,7 +796,6 @@
             </div>
 
             <button class="btn btn-primary" onclick="saveSettings()">保存して営業ページへ</button>
-            <button class="btn btn-secondary" onclick="resetSettings()">初期化</button>
         </div>
 
         <!-- 営業ページ -->
@@ -819,23 +824,23 @@
         const PLANS = {
             'スタンダード': { 
                 courses: ['吸物', '果菜盛り', '蒸物', '揚物', '煮物', 'ご飯', '甘味'],
-                color: '#9e9e9e'  // グレー系
+                color: '#455A64'  // 濃いブルーグレー（薄いグレーから変更して、くっきり見やすく）
             },
             '和牛懐石': { 
                 courses: ['吸物', '果菜盛り', 'すき焼き', 'フライ', 'ステーキ', 'ご飯', '甘味'],
-                color: '#8d6e63'  // ブラウン系
+                color: '#8E24AA'  // 鮮やかな紫（茶色は見分けにくいので、特別感のある紫に変更！）
             },
             'ステーキ': { 
                 courses: ['吸物', '果菜盛り', '蒸物', '揚物', 'ステーキ', 'ご飯', '甘味'],
-                color: '#e57373'  // 赤系
+                color: '#D32F2F'  // 濃い赤（薄い赤から、はっきりした赤へ）
             },
             'しゃぶしゃぶ': { 
                 courses: ['吸物', '果菜盛り', 'しゃぶしゃぶ', '蒸物', '揚物', 'ご飯', '甘味'],
-                color: '#64b5f6'  // 青系
+                color: '#1976D2'  // 濃い青（水色から、はっきりした青へ）
             },
             '連泊': { 
                 courses: ['茶碗蒸し', '牛たたき', '焼物', '小鉢', '揚物', 'ご飯', '甘味'],
-                color: '#81c784'  // 緑系
+                color: '#2E7D32'  // 濃い緑（薄い緑から、はっきりした緑へ）
             }
         };
 
@@ -895,19 +900,25 @@
             }
         }
 
-        // 設定保存
+        // 設定保存（修正版：データを消さないようにしました）
         function saveSettings() {
             localStorage.setItem('orderSettings', JSON.stringify(settings));
-            initOrderState();
+            
+            // ★ここが重要！ true を渡して「データを引き継いで！」と命令しています
+            initOrderState(true);
+            
             saveOrderState();
             switchTab('order');
             alert('設定を保存しました！');
         }
 
-        // 設定を静かに保存（アラートやタブ切り替えなし）
+        // 設定を静かに保存（修正版：データを消さないようにしました）
         function saveSettingsQuiet() {
             localStorage.setItem('orderSettings', JSON.stringify(settings));
-            initOrderState();
+            
+            // ★ここも true にして、データを守ります
+            initOrderState(true);
+            
             saveOrderState();
         }
 
@@ -941,45 +952,42 @@
             alert('初期化しました！');
         }
 
-        // Order状態初期化
-        function initOrderState() {
+        // Order状態初期化（修正版：今の状態を引き継げるようにしました）
+        function initOrderState(keepData = false) {
+            // 1. 「引き継ぎモード(keepData=true)」なら、今の状態をバックアップする
+            let oldState = {};
+            if (keepData) {
+                oldState = JSON.parse(JSON.stringify(orderState));
+            }
+
+            // 2. いったん空にする
             orderState = {};
             const allRooms = [...settings.rooms.filter(r => r.enabled), ...settings.customRooms.filter(r => r.enabled)];
             
             allRooms.forEach(room => {
+                // バックアップからこの部屋のデータを探す
+                const oldRoomData = oldState[room.name];
                 const courses = PLANS[room.plan].courses;
+
                 orderState[room.name] = {
-                    eatingSpeed: 'N',
+                    // スピード設定は引き継ぐ（なければ'N'）
+                    eatingSpeed: (oldRoomData && oldRoomData.eatingSpeed) ? oldRoomData.eatingSpeed : 'N',
                     people: room.people,
                     courses: {}
                 };
                 
-                // 通常の料理
+                // --- 通常の料理 ---
                 courses.forEach(course => {
-                    // アレルギー情報を取得
+                    // アレルギー情報は最新の設定を使う
                     const allergy = room.allergies && room.allergies[course] ? room.allergies[course] : '';
                     
-                    orderState[room.name].courses[course] = {
-                        status: 'none',
-                        time: null,
-                        pressedTime: null,
-                        staff: null,
-                        wCount: 0,
-                        allergy: allergy
-                    };
-                });
-                
-                // 追加料理
-                const roomIndex = room.isCustom ? 
-                    'custom-' + settings.customRooms.indexOf(room) : 
-                    String(settings.rooms.indexOf(room));
-                
-                settings.additionalDishes.forEach(dish => {
-                    if (dish.rooms.includes(roomIndex)) {
-                        // 追加料理のアレルギー情報を取得
-                        const allergy = room.allergies && room.allergies[dish.name] ? room.allergies[dish.name] : '';
-                        
-                        orderState[room.name].courses[dish.name] = {
+                    // ★ここがポイント：前のデータがあればそのままコピーする
+                    if (keepData && oldRoomData && oldRoomData.courses && oldRoomData.courses[course]) {
+                        orderState[room.name].courses[course] = oldRoomData.courses[course];
+                        orderState[room.name].courses[course].allergy = allergy; // アレルギーだけ最新に更新
+                    } else {
+                        // 前のデータがないなら「未」で作る
+                        orderState[room.name].courses[course] = {
                             status: 'none',
                             time: null,
                             pressedTime: null,
@@ -987,6 +995,32 @@
                             wCount: 0,
                             allergy: allergy
                         };
+                    }
+                });
+                
+                // --- 追加料理 ---
+                const roomIndex = room.isCustom ? 
+                    'custom-' + settings.customRooms.indexOf(room) : 
+                    String(settings.rooms.indexOf(room));
+                
+                settings.additionalDishes.forEach(dish => {
+                    if (dish.rooms.includes(roomIndex)) {
+                        const allergy = room.allergies && room.allergies[dish.name] ? room.allergies[dish.name] : '';
+                        
+                        // ★追加料理も同じ：前のデータがあればコピーする
+                        if (keepData && oldRoomData && oldRoomData.courses && oldRoomData.courses[dish.name]) {
+                            orderState[room.name].courses[dish.name] = oldRoomData.courses[dish.name];
+                            orderState[room.name].courses[dish.name].allergy = allergy;
+                        } else {
+                            orderState[room.name].courses[dish.name] = {
+                                status: 'none',
+                                time: null,
+                                pressedTime: null,
+                                staff: null,
+                                wCount: 0,
+                                allergy: allergy
+                            };
+                        }
                     }
                 });
             });
