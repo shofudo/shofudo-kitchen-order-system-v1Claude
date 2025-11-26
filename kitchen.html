@@ -612,6 +612,9 @@
         function updateDisplay(orderData) {
             const content = document.getElementById('content');
             
+            // --- 設定: まとめる時間（ミリ秒） ---
+            const BATCH_WINDOW_MS = 20 * 1000; // 20秒
+            
             if (!orderData) {
                 content.innerHTML = `
                     <div class="empty-state">
@@ -622,38 +625,34 @@
                 return;
             }
 
-            // 料理ごとにグループ化
-            const dishGroups = {};
+            // 1. まず全ての有効な注文をフラットな配列に抽出
+            let allOrders = [];
             
             Object.entries(orderData).forEach(([roomName, roomData]) => {
                 if (!roomData.courses) return;
                 
                 Object.entries(roomData.courses).forEach(([courseName, courseData]) => {
-                    // 「注」(order)ステータスの料理のみ表示
+                    // 「注」(order)ステータスの料理のみ対象
                     if (courseData.status !== 'order') return;
                     
-                    if (!dishGroups[courseName]) {
-                        dishGroups[courseName] = [];
-                    }
-                    
-                    // 人数はFirebaseから取得(互換性のため、無い場合は2名)
-                    const people = roomData.people || 2;
-                    // アレルギー情報はFirebaseから取得
-                    const allergy = courseData.allergy || '';
-                    
-                    dishGroups[courseName].push({
+                    // タイムスタンプがない場合（古いデータなど）は現在時刻扱いにしないとエラーになるため
+                    // 0 または 非常に古い時刻として扱う
+                    const timestamp = courseData.orderTimestamp || 0;
+
+                    allOrders.push({
+                        dishName: courseName,
                         roomName: roomName,
-                        people: people,
-                        allergy: allergy,
+                        people: roomData.people || 2,
+                        allergy: courseData.allergy || '',
                         wCount: courseData.wCount || 0,
                         staff: courseData.staff,
-                        pressedTime: courseData.pressedTime
+                        pressedTime: courseData.pressedTime,
+                        timestamp: timestamp
                     });
                 });
             });
 
-            // 表示を構築
-            if (Object.keys(dishGroups).length === 0) {
+            if (allOrders.length === 0) {
                 content.innerHTML = `
                     <div class="empty-state">
                         <h2>✅ 全ての注文が処理済みです</h2>
@@ -663,76 +662,132 @@
                 return;
             }
 
+            // 2. 料理名ごとに一時的にグルーピング
+            const tempByDish = {};
+            allOrders.forEach(order => {
+                if (!tempByDish[order.dishName]) {
+                    tempByDish[order.dishName] = [];
+                }
+                tempByDish[order.dishName].push(order);
+            });
+
+            // 3. 各料理の中で、時間に基づいて「バッチ（かたまり）」に分割する
+            let displayBatches = [];
+
+            Object.keys(tempByDish).forEach(dishName => {
+                const orders = tempByDish[dishName];
+                
+                // 時間順（古い順）にソート
+                orders.sort((a, b) => a.timestamp - b.timestamp);
+
+                let currentBatch = [];
+                let batchStartTime = null;
+
+                orders.forEach(order => {
+                    if (currentBatch.length === 0) {
+                        // 新しいバッチの開始
+                        currentBatch.push(order);
+                        batchStartTime = order.timestamp;
+                    } else {
+                        // 基準時間（バッチの最初の注文）から20秒以内かチェック
+                        // ※ timestampが0(古いデータ)同士の場合は常に一緒にする
+                        if (batchStartTime === 0 || (order.timestamp - batchStartTime <= BATCH_WINDOW_MS)) {
+                            currentBatch.push(order);
+                        } else {
+                            // 20秒を超えたので、今のバッチを確定させて新しいバッチを作る
+                            displayBatches.push({
+                                dishName: dishName,
+                                orders: currentBatch,
+                                startTime: batchStartTime
+                            });
+                            currentBatch = [order];
+                            batchStartTime = order.timestamp;
+                        }
+                    }
+                });
+
+                // 残っているバッチを追加
+                if (currentBatch.length > 0) {
+                    displayBatches.push({
+                        dishName: dishName,
+                        orders: currentBatch,
+                        startTime: batchStartTime
+                    });
+                }
+            });
+
+            // 4. 表示順の決定（古いバッチ順、あるいは料理順など）
+            // ここでは「バッチの開始時間が古い順」に並べて表示します
+            displayBatches.sort((a, b) => a.startTime - b.startTime);
+
+
+            // 5. HTML生成
+            // 5. HTML生成
             let html = '<div class="dish-grid">';
             
-            Object.entries(dishGroups).forEach(([dishName, orders]) => {
+            displayBatches.forEach(batch => {
+                const dishName = batch.dishName;
+                const orders = batch.orders;
+                
                 // 部屋の順序でソート
                 const sortedOrders = sortRoomsByOrder(orders);
                 const totalPeople = sortedOrders.reduce((sum, order) => sum + order.people, 0);
                 
-                // ふりがなを取得
+                // ふりがな
                 const furigana = COURSE_FURIGANA[dishName] || '';
                 
+                // ★追加: 発注時間を整形（例: "18:05"）
+                let timeString = '';
+                if (batch.startTime && batch.startTime > 0) {
+                    const date = new Date(batch.startTime);
+                    const hours = String(date.getHours()).padStart(2, '0');
+                    const minutes = String(date.getMinutes()).padStart(2, '0');
+                    // 秒まで出したい場合はここを調整
+                    timeString = `${hours}:${minutes}`; 
+                }
+                
+                // 古い注文の警告判定
+                const isOldOrder = (Date.now() - batch.startTime > 300000) && batch.startTime !== 0;
+
                 html += `
-                    <div class="dish-card">
+                    <div class="dish-card" style="${isOldOrder ? 'border-color: #e74c3c;' : ''}">
                         <div class="dish-header">
                             <div class="dish-name-container">
                                 <div class="dish-name">${dishName}</div>
                                 ${furigana ? `<div class="dish-furigana">${furigana}</div>` : ''}
                             </div>
-                            <div class="dish-total">${totalPeople}名</div>
+                            
+                            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
+                                <div class="dish-total">${totalPeople}名</div>
+                                ${timeString ? `<div style="font-size: 16px; font-weight: bold; color: #555;">🕒 ${timeString}</div>` : ''}
+                            </div>
                         </div>
                         <div class="order-list">
                 `;
                 
-                // 部屋ごとに1行で表示(グループ化なし)
+                // (以下、以前と同じ注文リストのループ処理)
                 sortedOrders.forEach(order => {
                     html += `<div class="order-item">`;
-                    
-                    // 部屋名とタグを横並びで表示
                     html += `<div class="room-row">`;
-                    
-                    // 左側: 部屋名
                     html += `
                         <div class="room-name-left">
                             <span class="room-icon">🏠</span>
                             ${order.roomName}
                         </div>
                     `;
-                    
-                    // 右側: タグ群
                     html += `<div class="tags-right">`;
-                    
-                    // 火入れタグ(W×2など)
                     if (order.wCount > 0) {
-                        html += `
-                            <span class="detail-tag w-tag">
-                                🔥 W×${order.wCount}
-                            </span>
-                        `;
+                        html += `<span class="detail-tag w-tag">🔥 W×${order.wCount}</span>`;
                     }
-                    
-                    // アレルギータグ
                     if (order.allergy) {
-                        html += `
-                            <span class="detail-tag allergy-tag">
-                                ${order.allergy}NG
-                            </span>
-                        `;
+                        html += `<span class="detail-tag allergy-tag">${order.allergy}NG</span>`;
                     }
-                    
-                    // 担当者タグ
                     if (order.staff) {
-                        html += `
-                            <span class="detail-tag staff-tag">
-                                👤 ${order.staff}
-                            </span>
-                        `;
+                        html += `<span class="detail-tag staff-tag">👤 ${order.staff}</span>`;
                     }
-                    
-                    html += `</div>`; // tags-right閉じ
-                    html += `</div>`; // room-row閉じ
-                    html += '</div>'; // order-item閉じ
+                    html += `</div>`; 
+                    html += `</div>`; 
+                    html += '</div>'; 
                 });
                 
                 html += `

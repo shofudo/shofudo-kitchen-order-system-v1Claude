@@ -1561,6 +1561,8 @@
                     showWCountModal(roomName, courseName);
                 } else if (state.status === 'meat') {
                     state.status = 'order';
+                    // ★追加: タイムスタンプを保存 (ステーキ・煮物用)
+                    state.orderTimestamp = Date.now();
                 } else if (state.status === 'order') {
                     state.status = 'serve';
                     showStaffModal(roomName, courseName);
@@ -1574,19 +1576,16 @@
             } else {
                 // 通常: 未 → 待 → 注 → 提 → 未
                 if (state.status === 'none') {
-                    state.status = 'wait';
-                    state.pressedTime = getCurrentTime();
-                    showTimeModal(roomName, courseName);
+                   // ...
                 } else if (state.status === 'wait') {
                     state.status = 'order';
+                    // ★追加: タイムスタンプを保存 (通常料理用)
+                    state.orderTimestamp = Date.now();
                 } else if (state.status === 'order') {
                     state.status = 'serve';
                     showStaffModal(roomName, courseName);
                 } else {
-                    state.status = 'none';
-                    state.time = null;
-                    state.pressedTime = null;
-                    state.staff = null;
+                    // ...
                 }
             }
 
