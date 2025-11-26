@@ -1537,6 +1537,7 @@
             // 状態遷移
             if (courseName === '果菜盛り' || courseName === 'しゃぶしゃぶ') {
                 // 果菜盛り、しゃぶしゃぶ: 未 → 待 → 提 → 未
+                // (ここは「注」の状態がないのでタイムスタンプは不要です)
                 if (state.status === 'none') {
                     state.status = 'wait';
                     state.pressedTime = getCurrentTime();
@@ -1561,7 +1562,7 @@
                     showWCountModal(roomName, courseName);
                 } else if (state.status === 'meat') {
                     state.status = 'order';
-                    // ★追加: タイムスタンプを保存 (ステーキ・煮物用)
+                    // ★追加: タイムスタンプを保存
                     state.orderTimestamp = Date.now();
                 } else if (state.status === 'order') {
                     state.status = 'serve';
@@ -1574,18 +1575,24 @@
                     state.wCount = 0;
                 }
             } else {
-                // 通常: 未 → 待 → 注 → 提 → 未
+                // 通常(吸物、蒸物など): 未 → 待 → 注 → 提 → 未
+                // ★ここが省略されていたため動きませんでした。復活させました！
                 if (state.status === 'none') {
-                   // ...
+                    state.status = 'wait';
+                    state.pressedTime = getCurrentTime();
+                    showTimeModal(roomName, courseName);
                 } else if (state.status === 'wait') {
                     state.status = 'order';
-                    // ★追加: タイムスタンプを保存 (通常料理用)
+                    // ★追加: タイムスタンプを保存
                     state.orderTimestamp = Date.now();
                 } else if (state.status === 'order') {
                     state.status = 'serve';
                     showStaffModal(roomName, courseName);
                 } else {
-                    // ...
+                    state.status = 'none';
+                    state.time = null;
+                    state.pressedTime = null;
+                    state.staff = null;
                 }
             }
 
