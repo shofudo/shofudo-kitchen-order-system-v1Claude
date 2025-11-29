@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>キッチンディスプレイ</title>
     
-    <!-- PWA設定 -->
     <link rel="manifest" href="./manifest-kitchen.json">
     <meta name="theme-color" content="#3498db">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,6 +16,9 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            /* タップした時に文字が選択されないようにする */
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         body {
@@ -27,7 +29,7 @@
             overflow-x: hidden;
         }
 
-        /* ヘッダーを横並びにコンパクト化 */
+        /* ヘッダー */
         .header {
             display: flex;
             align-items: center;
@@ -54,7 +56,7 @@
             white-space: nowrap;
         }
 
-        /* 通知音テストボタン - コンパクト化 */
+        /* 通知音テストボタン */
         .sound-test-btn {
             padding: 8px 16px;
             font-size: 14px;
@@ -73,59 +75,29 @@
             flex-shrink: 0;
         }
 
-        .sound-test-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.5);
-        }
-
-        .sound-test-btn:active {
-            transform: translateY(0);
-        }
-
-        /* テスト中の状態 */
+        .sound-test-btn:active { transform: translateY(0); }
         .sound-test-btn.testing {
             background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);
-            box-shadow: 0 2px 8px rgba(255, 167, 38, 0.4);
             animation: pulse 1s ease-in-out;
         }
-
-        /* 成功状態 */
         .sound-test-btn.success {
             background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
-            box-shadow: 0 2px 8px rgba(81, 207, 102, 0.4);
         }
+        .sound-test-btn.hidden { display: none; }
 
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
 
-        .sound-test-btn.hidden {
-            display: none;
-        }
-
-        /* レスポンシブ対応 */
         @media (max-width: 768px) {
-            .header {
-                flex-wrap: wrap;
-                gap: 10px;
-            }
-            
-            .header h1 {
-                font-size: 18px;
-            }
-            
-            .last-update {
-                font-size: 12px;
-            }
-            
-            .sound-test-btn {
-                padding: 6px 12px;
-                font-size: 13px;
-            }
+            .header { flex-wrap: wrap; gap: 10px; }
+            .header h1 { font-size: 18px; }
+            .last-update { font-size: 12px; }
+            .sound-test-btn { padding: 6px 12px; font-size: 13px; }
         }
 
-        /* グリッドレイアウト - より多くのカードを表示 */
+        /* グリッドレイアウト */
         .dish-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -133,7 +105,7 @@
             margin-bottom: 10px;
         }
 
-        /* カードをコンパクトに */
+        /* カード */
         .dish-card {
             background: white;
             border-radius: 12px;
@@ -142,7 +114,6 @@
             border: 2px solid #3498db;
         }
 
-        /* ヘッダー部分をコンパクトに */
         .dish-header {
             display: flex;
             justify-content: space-between;
@@ -184,22 +155,59 @@
             text-align: center;
         }
 
-        /* 注文リストをコンパクトに */
+        /* 注文リスト */
         .order-list {
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
 
-        /* 各注文アイテムをコンパクトに */
+        /* ★ここが重要：クリックできる行のデザイン */
         .order-item {
             background: #f8f9fa;
-            padding: 8px 10px;
+            padding: 10px 12px;
             border-radius: 10px;
-            border-left: 4px solid #3498db;
+            border-left: 6px solid #3498db;
+            cursor: pointer; /* 指マークにする */
+            transition: all 0.2s;
+            position: relative;
         }
 
-        /* 部屋名とタグを横並びにする行 */
+        /* タップした時の動き */
+        .order-item:active {
+            transform: scale(0.98);
+        }
+
+        /* ★チェック済み（完了）のデザイン */
+        .order-item.checked {
+            background: #e0e0e0;     /* 背景をグレーに */
+            border-left-color: #95a5a6; /* 左の線をグレーに */
+            opacity: 0.7;             /* 全体を少し薄く */
+        }
+        
+        .order-item.checked .room-name-left {
+            text-decoration: line-through; /* 文字に取り消し線 */
+            color: #7f8c8d;
+        }
+
+        /* チェックマーク（普段は隠れている） */
+        .check-mark {
+            display: none;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: #27ae60;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        /* チェックされたら表示する */
+        .order-item.checked .check-mark {
+            display: block;
+        }
+
         .room-row {
             display: flex;
             justify-content: space-between;
@@ -207,31 +215,41 @@
             gap: 10px;
         }
 
-        /* 左側の部屋名 */
         .room-name-left {
             font-size: 18px;
             font-weight: bold;
             color: #2c3e50;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             flex-shrink: 0;
         }
 
-        .room-icon {
-            font-size: 16px;
+        /* ★人数のデザイン */
+        .people-count {
+            background: #34495e;
+            color: white;
+            font-size: 14px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+        
+        /* チェックされたら人数もグレーに */
+        .order-item.checked .people-count {
+            background: #95a5a6;
         }
 
-        /* 右側のタグ群 */
         .tags-right {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
             align-items: center;
             justify-content: flex-end;
+            padding-right: 30px; /* チェックマークとかぶらないように隙間をあける */
         }
 
-        /* 各タグのスタイル - コンパクト化 */
         .detail-tag {
             padding: 6px 12px;
             border-radius: 16px;
@@ -245,7 +263,6 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
         }
 
-        /* アレルギータグ - 赤色で目立つように */
         .allergy-tag {
             background: #ff6b6b;
             color: white;
@@ -253,7 +270,6 @@
             font-size: 16px;
         }
 
-        /* 火入れタグ(W×2など) - オレンジ色で目立つように */
         .w-tag {
             background: #ffa94d;
             color: #fff;
@@ -261,14 +277,12 @@
             font-size: 16px;
         }
 
-        /* 担当者タグ */
         .staff-tag {
             background: #d4edda;
             color: #155724;
             border: 2px solid #28a745;
         }
 
-        /* 空の状態 */
         .empty-state {
             text-align: center;
             padding: 60px 30px;
@@ -288,26 +302,13 @@
             color: #7f8c8d;
         }
 
-        /* レスポンシブ調整 */
         @media (max-width: 768px) {
-            .dish-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .dish-name {
-                font-size: 24px;
-            }
-            
-            .dish-furigana {
-                font-size: 20px;
-            }
-            
-            .dish-total {
-                font-size: 32px;
-            }
+            .dish-grid { grid-template-columns: 1fr; }
+            .dish-name { font-size: 24px; }
+            .dish-furigana { font-size: 20px; }
+            .dish-total { font-size: 32px; }
         }
 
-        /* ローディングアニメーション */
         .loading {
             display: flex;
             justify-content: center;
@@ -345,12 +346,10 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
-        // 料理名のふりがな対応表
         const COURSE_FURIGANA = {
             "吸物": "すいもの",
             "果菜盛り": "かさいもり",
@@ -366,10 +365,8 @@
             "鮑": "あわび"
         };
 
-        // 部屋の表示順序
         const ROOM_ORDER = ["やまぶき", "わすれな草", "しゃくなげ", "あんず", "なつめ"];
 
-        // Firebase設定
         const firebaseConfig = {
             apiKey: "AIzaSyAoyApbQzAlSYsM1MBDPZ68I5EaJ3M_yE8",
             authDomain: "restaurant-order-system-8855a.firebaseapp.com",
@@ -380,34 +377,29 @@
             appId: "1:695114713080:web:de13ca2e7e448e92fb380d"
         };
 
-        // Firebase初期化
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
         const ordersRef = ref(database, 'orders');
 
-        // 前回のステータスを保持(通知音用)
         let previousOrderStatuses = {};
-
-        // 初回データ取得フラグ
         let initialDataLoaded = false;
+        
+        // ★【ノート機能】チェックした項目を記憶しておく箱
+        // ブラウザを閉じても覚えているように localStorage を使います
+        let checkedItems = JSON.parse(localStorage.getItem('kitchenCheckedItems')) || {};
 
-        // タイムアウト設定(10秒以内にデータが取得できない場合はエラー表示)
         const loadingTimeout = setTimeout(() => {
             if (!initialDataLoaded) {
                 showError('接続タイムアウト', 'Firebaseへの接続に時間がかかっています。ネットワーク接続を確認してください。');
             }
         }, 10000);
 
-        // AudioContextをグローバルで1つだけ保持(iOS Safari対策)
         let audioContext = null;
         let audioInitialized = false;
 
-        // AudioContextを初期化する関数
         function initAudioContext() {
             if (audioInitialized) return;
-            
             try {
-                // AudioContextを1回だけ作成して保持
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 audioContext.resume().then(() => {
                     audioInitialized = true;
@@ -418,43 +410,27 @@
             }
         }
 
-        // ページ読み込み時に自動的に音声を初期化(一部のブラウザで有効)
         window.addEventListener('load', initAudioContext);
-        
-        // ユーザーの最初のクリック/タッチで音声を有効化
         document.addEventListener('click', initAudioContext, { once: true });
         document.addEventListener('touchstart', initAudioContext, { once: true });
 
-        // 通知音テストボタンの処理
         function testNotificationSound() {
             const btn = document.getElementById('sound-test-btn');
-            
-            // ボタンを「テスト中」状態に
             btn.innerHTML = '🔊 テスト中...';
             btn.classList.add('testing');
             btn.disabled = true;
-            
-            // AudioContextを初期化
             initAudioContext();
-            
-            // 少し待ってから音を再生
             setTimeout(() => {
                 if (audioInitialized) {
-                    // テスト音を再生
                     playNotificationSound();
-                    
-                    // ボタンを「成功」状態に
                     btn.classList.remove('testing');
                     btn.classList.add('success');
                     btn.innerHTML = '✅ 通知音が有効です';
                     btn.disabled = false;
-                    
-                    // 5秒後にボタンを非表示
                     setTimeout(() => {
                         btn.classList.add('hidden');
                     }, 5000);
                 } else {
-                    // 初期化失敗 - ボタンを元に戻す
                     btn.classList.remove('testing');
                     btn.innerHTML = '🔔 通知音テスト';
                     btn.disabled = false;
@@ -463,82 +439,55 @@
             }, 300);
         }
 
-        // 通知音を再生する関数(より目立つ音に改善)
         function playNotificationSound() {
-            console.log('通知音を再生します');
-
-            // AudioContextが初期化されていない場合は初期化を試みる
             if (!audioContext || !audioInitialized) {
-                console.warn('AudioContextを初期化中...');
                 initAudioContext();
-                // 初期化後に再度再生を試みる
                 setTimeout(() => {
-                    if (audioInitialized) {
-                        playNotificationSound();
-                    } else {
-                        console.warn('AudioContextが初期化できませんでした。画面をタップしてください。');
-                    }
+                    if (audioInitialized) playNotificationSound();
                 }, 100);
                 return;
             }
-
             try {
-                // 2段階の音を鳴らす(ピロン♪という感じ)
                 const now = audioContext.currentTime;
-                
-                // 1音目 (高い音)
                 const osc1 = audioContext.createOscillator();
                 const gain1 = audioContext.createGain();
                 osc1.connect(gain1);
                 gain1.connect(audioContext.destination);
-                osc1.frequency.value = 1000; // 1000Hz
+                osc1.frequency.value = 1000;
                 osc1.type = 'sine';
                 gain1.gain.setValueAtTime(0.4, now);
                 gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
                 osc1.start(now);
                 osc1.stop(now + 0.15);
                 
-                // 2音目 (少し低い音)
                 const osc2 = audioContext.createOscillator();
                 const gain2 = audioContext.createGain();
                 osc2.connect(gain2);
                 gain2.connect(audioContext.destination);
-                osc2.frequency.value = 800; // 800Hz
+                osc2.frequency.value = 800;
                 osc2.type = 'sine';
                 gain2.gain.setValueAtTime(0.4, now + 0.15);
                 gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
                 osc2.start(now + 0.15);
                 osc2.stop(now + 0.3);
-                
-                console.log('通知音を再生しました');
             } catch (error) {
                 console.error('通知音の再生エラー:', error);
             }
         }
 
-        // 注文データをリアルタイムで監視
         onValue(ordersRef, (snapshot) => {
-            // 初回データ取得成功
             if (!initialDataLoaded) {
                 initialDataLoaded = true;
                 clearTimeout(loadingTimeout);
                 console.log('Firebase接続成功');
             }
-            
             const orderData = snapshot.val();
-            
-            // ステータス変更を検出して通知音を鳴らす
             checkForNewOrders(orderData);
-            
             updateDisplay(orderData);
             updateLastUpdate();
         }, (error) => {
-            console.error('Firebaseエラー:', error);
-            clearTimeout(loadingTimeout);
-            
-            // エラーの種類に応じたメッセージを表示
             if (error.code === 'PERMISSION_DENIED') {
-                showError('権限エラー', 'Firebaseデータベースへのアクセス権限がありません。Database Rulesを確認してください。');
+                showError('権限エラー', 'Firebaseデータベースへのアクセス権限がありません。');
             } else if (error.code === 'NETWORK_ERROR') {
                 showError('ネットワークエラー', 'ネットワーク接続を確認してください。');
             } else {
@@ -546,40 +495,35 @@
             }
         });
 
-        // 新しい「注」ステータスを検出
         function checkForNewOrders(orderData) {
             if (!orderData) return;
-
             let hasNewOrder = false;
-
             Object.entries(orderData).forEach(([roomName, roomData]) => {
                 if (!roomData.courses) return;
-
                 Object.entries(roomData.courses).forEach(([courseName, courseData]) => {
                     const key = `${roomName}_${courseName}`;
                     const currentStatus = courseData.status;
                     const previousStatus = previousOrderStatuses[key];
-
-                    // 初回データ取得後、「order」ステータスの変化を検出
                     if (initialDataLoaded) {
-                        // 以前のステータスが存在し、かつ「order」以外から「order」に変わった場合
                         if (previousStatus && previousStatus !== 'order' && currentStatus === 'order') {
                             hasNewOrder = true;
-                            console.log(`新しい注文を検出: ${roomName} - ${courseName}`);
+                            // 新しい注文が来たら、その料理のチェック記録を消す（復活させる）
+                            // ※同じ部屋で同じ料理が再度注文された場合の考慮
+                            const checkKey = `${courseName}_${roomName}`;
+                            if (checkedItems[checkKey]) {
+                                delete checkedItems[checkKey];
+                                localStorage.setItem('kitchenCheckedItems', JSON.stringify(checkedItems));
+                            }
                         }
                     }
-
-                    // 現在のステータスを保存
                     previousOrderStatuses[key] = currentStatus;
                 });
             });
-
             if (hasNewOrder) {
                 playNotificationSound();
             }
         }
 
-        // 最終更新時刻を表示
         function updateLastUpdate() {
             const now = new Date();
             const timeStr = now.toLocaleTimeString('ja-JP', { 
@@ -590,30 +534,46 @@
             document.getElementById('last-update').textContent = `最終更新: ${timeStr}`;
         }
 
-        // 部屋名を並び替える関数
         function sortRoomsByOrder(rooms) {
             return rooms.sort((a, b) => {
                 const indexA = ROOM_ORDER.indexOf(a.roomName);
                 const indexB = ROOM_ORDER.indexOf(b.roomName);
-                
-                // 両方とも定義されている場合は順序で比較
-                if (indexA !== -1 && indexB !== -1) {
-                    return indexA - indexB;
-                }
-                // 片方だけ定義されている場合は、定義されている方を前に
+                if (indexA !== -1 && indexB !== -1) return indexA - indexB;
                 if (indexA !== -1) return -1;
                 if (indexB !== -1) return 1;
-                // どちらも定義されていない場合は名前で比較
                 return a.roomName.localeCompare(b.roomName, 'ja');
             });
         }
 
-        // ディスプレイを更新
+        // ★タップした時に呼び出される機能
+        window.toggleCheck = function(dishName, roomName) {
+            const key = `${dishName}_${roomName}`;
+            
+            // チェック状態を反転させる（オンならオフ、オフならオン）
+            if (checkedItems[key]) {
+                delete checkedItems[key];
+            } else {
+                checkedItems[key] = true;
+            }
+            
+            // 忘れずノート（localStorage）に保存
+            localStorage.setItem('kitchenCheckedItems', JSON.stringify(checkedItems));
+            
+            // 画面の見た目を更新するために、要素を探してクラスを付け外しする
+            // （画面全体を再描画しなくても、ここだけ速く反応させるため）
+            const elements = document.querySelectorAll(`[data-key="${key}"]`);
+            elements.forEach(el => {
+                if (checkedItems[key]) {
+                    el.classList.add('checked');
+                } else {
+                    el.classList.remove('checked');
+                }
+            });
+        };
+
         function updateDisplay(orderData) {
             const content = document.getElementById('content');
-            
-            // --- 設定: まとめる時間（ミリ秒） ---
-            const BATCH_WINDOW_MS = 5 * 1000; // 5秒
+            const BATCH_WINDOW_MS = 5 * 1000; // 5秒設定のまま
             
             if (!orderData) {
                 content.innerHTML = `
@@ -625,20 +585,12 @@
                 return;
             }
 
-            // 1. まず全ての有効な注文をフラットな配列に抽出
             let allOrders = [];
-            
             Object.entries(orderData).forEach(([roomName, roomData]) => {
                 if (!roomData.courses) return;
-                
                 Object.entries(roomData.courses).forEach(([courseName, courseData]) => {
-                    // 「注」(order)ステータスの料理のみ対象
                     if (courseData.status !== 'order') return;
-                    
-                    // タイムスタンプがない場合（古いデータなど）は現在時刻扱いにしないとエラーになるため
-                    // 0 または 非常に古い時刻として扱う
                     const timestamp = courseData.orderTimestamp || 0;
-
                     allOrders.push({
                         dishName: courseName,
                         roomName: roomName,
@@ -662,39 +614,27 @@
                 return;
             }
 
-            // 2. 料理名ごとに一時的にグルーピング
             const tempByDish = {};
             allOrders.forEach(order => {
-                if (!tempByDish[order.dishName]) {
-                    tempByDish[order.dishName] = [];
-                }
+                if (!tempByDish[order.dishName]) tempByDish[order.dishName] = [];
                 tempByDish[order.dishName].push(order);
             });
 
-            // 3. 各料理の中で、時間に基づいて「バッチ（かたまり）」に分割する
             let displayBatches = [];
-
             Object.keys(tempByDish).forEach(dishName => {
                 const orders = tempByDish[dishName];
-                
-                // 時間順（古い順）にソート
                 orders.sort((a, b) => a.timestamp - b.timestamp);
-
                 let currentBatch = [];
                 let batchStartTime = null;
 
                 orders.forEach(order => {
                     if (currentBatch.length === 0) {
-                        // 新しいバッチの開始
                         currentBatch.push(order);
                         batchStartTime = order.timestamp;
                     } else {
-                        // 基準時間（バッチの最初の注文）から20秒以内かチェック
-                        // ※ timestampが0(古いデータ)同士の場合は常に一緒にする
                         if (batchStartTime === 0 || (order.timestamp - batchStartTime <= BATCH_WINDOW_MS)) {
                             currentBatch.push(order);
                         } else {
-                            // 20秒を超えたので、今のバッチを確定させて新しいバッチを作る
                             displayBatches.push({
                                 dishName: dishName,
                                 orders: currentBatch,
@@ -705,8 +645,6 @@
                         }
                     }
                 });
-
-                // 残っているバッチを追加
                 if (currentBatch.length > 0) {
                     displayBatches.push({
                         dishName: dishName,
@@ -716,37 +654,25 @@
                 }
             });
 
-            // 4. 表示順の決定（古いバッチ順、あるいは料理順など）
-            // ここでは「バッチの開始時間が古い順」に並べて表示します
             displayBatches.sort((a, b) => a.startTime - b.startTime);
 
-
-            // 5. HTML生成
-            // 5. HTML生成
             let html = '<div class="dish-grid">';
             
             displayBatches.forEach(batch => {
                 const dishName = batch.dishName;
                 const orders = batch.orders;
-                
-                // 部屋の順序でソート
                 const sortedOrders = sortRoomsByOrder(orders);
                 const totalPeople = sortedOrders.reduce((sum, order) => sum + order.people, 0);
-                
-                // ふりがな
                 const furigana = COURSE_FURIGANA[dishName] || '';
                 
-                // ★追加: 発注時間を整形（例: "18:05"）
                 let timeString = '';
                 if (batch.startTime && batch.startTime > 0) {
                     const date = new Date(batch.startTime);
                     const hours = String(date.getHours()).padStart(2, '0');
                     const minutes = String(date.getMinutes()).padStart(2, '0');
-                    // 秒まで出したい場合はここを調整
                     timeString = `${hours}:${minutes}`; 
                 }
                 
-                // 古い注文の警告判定
                 const isOldOrder = (Date.now() - batch.startTime > 300000) && batch.startTime !== 0;
 
                 html += `
@@ -756,7 +682,6 @@
                                 <div class="dish-name">${dishName}</div>
                                 ${furigana ? `<div class="dish-furigana">${furigana}</div>` : ''}
                             </div>
-                            
                             <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
                                 <div class="dish-total">${totalPeople}名</div>
                                 ${timeString ? `<div style="font-size: 16px; font-weight: bold; color: #555;">🕒 ${timeString}</div>` : ''}
@@ -765,26 +690,27 @@
                         <div class="order-list">
                 `;
                 
-                // (以下、以前と同じ注文リストのループ処理)
                 sortedOrders.forEach(order => {
-                    html += `<div class="order-item">`;
+                    // ★チェック状態を確認
+                    const key = `${order.dishName}_${order.roomName}`;
+                    const isChecked = checkedItems[key] ? 'checked' : '';
+
+                    // ★クリックで toggleCheck を呼び出す設定を追加
+                    // data-key は、後でクラスを操作するための目印です
+                    html += `<div class="order-item ${isChecked}" data-key="${key}" onclick="toggleCheck('${order.dishName}', '${order.roomName}')">`;
+                    html += `<div class="check-mark">✔</div>`; // チェックマーク
                     html += `<div class="room-row">`;
                     html += `
                         <div class="room-name-left">
                             <span class="room-icon">🏠</span>
                             ${order.roomName}
+                            <span class="people-count">${order.people}名</span>
                         </div>
                     `;
                     html += `<div class="tags-right">`;
-                    if (order.wCount > 0) {
-                        html += `<span class="detail-tag w-tag">🔥 W×${order.wCount}</span>`;
-                    }
-                    if (order.allergy) {
-                        html += `<span class="detail-tag allergy-tag">${order.allergy}NG</span>`;
-                    }
-                    if (order.staff) {
-                        html += `<span class="detail-tag staff-tag">👤 ${order.staff}</span>`;
-                    }
+                    if (order.wCount > 0) html += `<span class="detail-tag w-tag">🔥 W×${order.wCount}</span>`;
+                    if (order.allergy) html += `<span class="detail-tag allergy-tag">${order.allergy}NG</span>`;
+                    if (order.staff) html += `<span class="detail-tag staff-tag">👤 ${order.staff}</span>`;
                     html += `</div>`; 
                     html += `</div>`; 
                     html += '</div>'; 
@@ -800,7 +726,6 @@
             content.innerHTML = html;
         }
 
-        // エラー表示
         function showError(title = '接続エラー', message = 'Firebaseへの接続に失敗しました') {
             const content = document.getElementById('content');
             content.innerHTML = `
@@ -825,43 +750,29 @@
         }
     </script>
     
-    <!-- Service Worker登録 -->
     <script>
         if ('serviceWorker' in navigator) {
-            // ページ読み込み時にService Workerを登録
             navigator.serviceWorker.register('./sw.js')
                 .then((registration) => {
                     console.log('Service Worker登録成功:', registration.scope);
-                    
-                    // 新しいService Workerの更新を検出
                     registration.addEventListener('updatefound', () => {
                         const newWorker = registration.installing;
-                        console.log('新しいService Workerが見つかりました');
-                        
                         newWorker.addEventListener('statechange', () => {
                             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                // 新しいService Workerが利用可能
-                                console.log('新しいバージョンが利用可能です。更新を適用します...');
                                 newWorker.postMessage({ type: 'SKIP_WAITING' });
                             }
                         });
                     });
-                    
-                    // 定期的に更新をチェック(1時間ごと)
-                    setInterval(() => {
-                        registration.update();
-                    }, 60 * 60 * 1000);
+                    setInterval(() => { registration.update(); }, 60 * 60 * 1000);
                 })
                 .catch((error) => {
                     console.log('Service Worker登録失敗:', error);
                 });
             
-            // Service Workerが更新されたらページをリロード
             let refreshing = false;
             navigator.serviceWorker.addEventListener('controllerchange', () => {
                 if (!refreshing) {
                     refreshing = true;
-                    console.log('Service Workerが更新されました。ページをリロードします...');
                     window.location.reload();
                 }
             });
