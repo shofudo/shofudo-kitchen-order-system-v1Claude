@@ -821,28 +821,78 @@
         const FIXED_ROOMS = ['やまぶき', 'なでしこ', 'つばき', 'やしお', 'さくら', 'ふじ', 'さつき', 'きすげ', 'ゆり', 'はぎ'];
         const FIXED_STAFF = ['真弓', 'ミングマ', 'ボビー', 'サラミ', 'パビ', '翔平'];
         
-        const PLANS = {
+        // ■ 献立データの定義 ■
+
+        // 1. 通常シーズンのプラン
+        const NORMAL_PLANS = {
             'スタンダード': { 
                 courses: ['吸物', '果菜盛り', '蒸物', '揚物', '煮物', 'ご飯', '甘味'],
-                color: '#455A64'  // 濃いブルーグレー（薄いグレーから変更して、くっきり見やすく）
+                color: '#455A64'
             },
             '和牛懐石': { 
                 courses: ['吸物', '果菜盛り', 'すき焼き', 'フライ', 'ステーキ', 'ご飯', '甘味'],
-                color: '#8E24AA'  // 鮮やかな紫（茶色は見分けにくいので、特別感のある紫に変更！）
+                color: '#8E24AA'
             },
             'ステーキ': { 
                 courses: ['吸物', '果菜盛り', '蒸物', '揚物', 'ステーキ', 'ご飯', '甘味'],
-                color: '#D32F2F'  // 濃い赤（薄い赤から、はっきりした赤へ）
+                color: '#D32F2F'
             },
             'しゃぶしゃぶ': { 
                 courses: ['吸物', '果菜盛り', 'しゃぶしゃぶ', '蒸物', '揚物', 'ご飯', '甘味'],
-                color: '#1976D2'  // 濃い青（水色から、はっきりした青へ）
+                color: '#1976D2'
             },
             '連泊': { 
                 courses: ['茶碗蒸し', '牛たたき', '焼物', '小鉢', '揚物', 'ご飯', '甘味'],
-                color: '#2E7D32'  // 濃い緑（薄い緑から、はっきりした緑へ）
+                color: '#2E7D32'
             }
         };
+
+        // 2. 大晦日 (12/31) のプラン
+        // ※「ご飯・鮎ソバ」はボタンを分けました
+        const OMISOKA_PLANS = {
+            'スタンダード': { // 12/31は大晦日献立のみ
+                courses: ['前菜', '吸物', '強肴', '蒸物', '揚物', '鮎ソバ', 'ご飯', '甘味'],
+                color: '#37474F' // 厳かな濃いグレー
+            },
+            // 念のため連泊も同じにしておく
+            '連泊': { 
+                courses: ['前菜', '吸物', '強肴', '蒸物', '揚物', '鮎ソバ', 'ご飯', '甘味'],
+                color: '#37474F'
+            }
+        };
+
+        // 3. 正月 (1/1-1/3) のプラン
+        const SHOGATSU_PLANS = {
+            'スタンダード': { // これが正月献立
+                courses: ['吸物', '果菜盛', '焼物', '合肴', '煮物', 'ご飯', '甘味'],
+                color: '#b71c1c' // 正月らしい赤
+            },
+            '連泊': { // 正月の連泊は12/31と同じメニュー
+                courses: ['前菜', '吸物', '強肴', '蒸物', '揚物', '鮎ソバ', 'ご飯', '甘味'],
+                color: '#004D40' // 区別しやすい濃い緑
+            }
+        };
+
+        // ★日付判定ロジック
+        function getCurrentPlans() {
+            const now = new Date();
+            const month = now.getMonth() + 1;
+            const date = now.getDate();
+
+            // 12月31日
+            if (month === 12 && date === 31) {
+                return OMISOKA_PLANS;
+            }
+            // 1月1日 〜 1月3日
+            else if (month === 1 && date <= 3) {
+                return SHOGATSU_PLANS;
+            }
+            
+            // それ以外（通常）
+            return NORMAL_PLANS;
+        }
+
+        const PLANS = getCurrentPlans();
 
         let settings = {
             rooms: [],
@@ -1534,10 +1584,15 @@
                 previousState: JSON.parse(JSON.stringify(state))
             };
 
-            // 状態遷移
-            if (courseName === '果菜盛り' || courseName === 'しゃぶしゃぶ') {
-                // 果菜盛り、しゃぶしゃぶ: 未 → 待 → 提 → 未
-                // (ここは「注」の状態がないのでタイムスタンプは不要です)
+            // ★追加機能：ご飯のおかわりロジック
+            if (courseName === 'ご飯' && state.status === 'serve') {
+                showRefillModal(roomName, courseName);
+                return;
+            }
+
+            // 状態遷移ロジック
+            // 果菜盛り系: 未 → 待 → 提 → 未
+            if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛'].includes(courseName)) {
                 if (state.status === 'none') {
                     state.status = 'wait';
                     state.pressedTime = getCurrentTime();
@@ -1551,18 +1606,18 @@
                     state.pressedTime = null;
                     state.staff = null;
                 }
-            } else if (courseName === 'ステーキ' || courseName === '煮物') {
-                // ステーキ、煮物: 未 → 待 → 肉 → 注 → 提 → 未
+            } 
+            // 肉・メイン系: 未 → 待 → 調理開始(肉/焼) → 注 → 提 → 未
+            else if (['ステーキ', '煮物', '焼物', '強肴', '合肴'].includes(courseName)) {
                 if (state.status === 'none') {
                     state.status = 'wait';
                     state.pressedTime = getCurrentTime();
                     showTimeModal(roomName, courseName);
                 } else if (state.status === 'wait') {
-                    state.status = 'meat';
+                    state.status = 'meat'; 
                     showWCountModal(roomName, courseName);
                 } else if (state.status === 'meat') {
                     state.status = 'order';
-                    // ★追加: タイムスタンプを保存
                     state.orderTimestamp = Date.now();
                 } else if (state.status === 'order') {
                     state.status = 'serve';
@@ -1574,16 +1629,15 @@
                     state.staff = null;
                     state.wCount = 0;
                 }
-            } else {
-                // 通常(吸物、蒸物など): 未 → 待 → 注 → 提 → 未
-                // ★ここが省略されていたため動きませんでした。復活させました！
+            } 
+            // その他（吸物、蒸物、揚物、鮎ソバ、ご飯、甘味、前菜など）: 未 → 待 → 注 → 提 → 未
+            else {
                 if (state.status === 'none') {
                     state.status = 'wait';
                     state.pressedTime = getCurrentTime();
                     showTimeModal(roomName, courseName);
                 } else if (state.status === 'wait') {
                     state.status = 'order';
-                    // ★追加: タイムスタンプを保存
                     state.orderTimestamp = Date.now();
                 } else if (state.status === 'order') {
                     state.status = 'serve';
@@ -2004,6 +2058,55 @@
             renderOrderPage();
         }
 
+        // ■■■ ご飯おかわり機能（ここから追加） ■■■
+        function showRefillModal(roomName, courseName) {
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modal-title');
+            const body = document.getElementById('modal-body');
+
+            title.textContent = '🍚 ご飯おかわり注文';
+            
+            const options = [1, 2, 3, 4, 5];
+            
+            body.innerHTML = `
+                <div style="text-align:center; margin-bottom:15px; color:#666; font-size:14px;">
+                    キッチンへ通知する数を選択してください
+                </div>
+                <div class="modal-buttons">
+                    ${options.map(num => `
+                        <button class="modal-btn" onclick="sendRefill('${roomName}', '${courseName}', ${num})">
+                            ${num}名分
+                        </button>
+                    `).join('')}
+                    <button class="modal-btn" style="background:#ffebee; color:#c62828; border:2px solid #ef9a9a;" onclick="resetCourseStatus('${roomName}', '${courseName}')">
+                        未提供に戻す
+                    </button>
+                </div>
+            `;
+            modal.classList.add('active');
+        }
+
+        function sendRefill(roomName, courseName, count) {
+            const state = orderState[roomName].courses[courseName];
+            state.status = 'order'; // キッチンに通知するために「注文」状態にする
+            state.orderTimestamp = Date.now();
+            state.refillCount = count; // おかわりの数
+            
+            closeModal();
+            saveOrderState();
+            renderOrderPage();
+        }
+
+        function resetCourseStatus(roomName, courseName) {
+            const state = orderState[roomName].courses[courseName];
+            state.status = 'none';
+            state.refillCount = 0;
+            closeModal();
+            saveOrderState();
+            renderOrderPage();
+        }
+        // ■■■ ここまで ■■■
+        
         // 初期化実行
         init();
     </script>

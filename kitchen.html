@@ -353,6 +353,7 @@
         const COURSE_FURIGANA = {
             "吸物": "すいもの",
             "果菜盛り": "かさいもり",
+            "果菜盛": "かさいもり",
             "蒸物": "むしもの",
             "揚物": "あげもの",
             "煮物": "にもの",
@@ -362,7 +363,14 @@
             "フライ": "ふらい",
             "ステーキ": "すてーき",
             "鍋": "なべ",
-            "鮑": "あわび"
+            "鮑": "あわび",
+            
+            // ★ここが新しく追加した部分
+            "前菜": "ぜんさい",
+            "強肴": "しいざかな",
+            "合肴": "あいざかな",
+            "焼物": "やきもの",
+            "鮎ソバ": "あゆそば"
         };
 
         const ROOM_ORDER = ["やまぶき", "わすれな草", "しゃくなげ", "あんず", "なつめ"];
@@ -708,6 +716,10 @@
                         </div>
                     `;
                     html += `<div class="tags-right">`;
+                    // ★ここを追加：おかわりがある場合のみ表示
+                    if (order.refillCount > 0) {
+                        html += `<span class="detail-tag" style="background:#e3f2fd; color:#0d47a1; border:3px solid #1976d2;">🍚 おかわり ${order.refillCount}名</span>`;
+                    }
                     if (order.wCount > 0) html += `<span class="detail-tag w-tag">🔥 W×${order.wCount}</span>`;
                     if (order.allergy) html += `<span class="detail-tag allergy-tag">${order.allergy}NG</span>`;
                     if (order.staff) html += `<span class="detail-tag staff-tag">👤 ${order.staff}</span>`;
