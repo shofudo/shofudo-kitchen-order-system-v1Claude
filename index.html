@@ -1584,8 +1584,8 @@
                 previousState: JSON.parse(JSON.stringify(state))
             };
 
-            // ★追加機能：ご飯のおかわりロジック
-            if (courseName === 'ご飯' && state.status === 'serve') {
+            // ★追加機能：ご飯・鮎ソバのおかわりロジック
+            if ((courseName === 'ご飯' || courseName === '鮎ソバ') && state.status === 'serve') {
                 showRefillModal(roomName, courseName);
                 return;
             }
@@ -2064,7 +2064,7 @@
             const title = document.getElementById('modal-title');
             const body = document.getElementById('modal-body');
 
-            title.textContent = '🍚 ご飯おかわり注文';
+            title.textContent = `🍚 ${courseName} おかわり注文`;
             
             const options = [1, 2, 3, 4, 5];
             
@@ -2106,7 +2106,7 @@
             renderOrderPage();
         }
         // ■■■ ここまで ■■■
-        
+
         // 初期化実行
         init();
     </script>

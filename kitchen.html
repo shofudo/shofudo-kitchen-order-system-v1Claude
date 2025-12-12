@@ -598,16 +598,26 @@
                 if (!roomData.courses) return;
                 Object.entries(roomData.courses).forEach(([courseName, courseData]) => {
                     if (courseData.status !== 'order') return;
+                    
                     const timestamp = courseData.orderTimestamp || 0;
+                    
+                    // ★ここが修正ポイント！
+                    // おかわり(refillCount)があるならその数を、なければ部屋の人数を使う
+                    let count = roomData.people || 2;
+                    if (courseData.refillCount && courseData.refillCount > 0) {
+                        count = courseData.refillCount;
+                    }
+
                     allOrders.push({
                         dishName: courseName,
                         roomName: roomName,
-                        people: roomData.people || 2,
+                        people: count, // 修正した「数」をここに入れる
                         allergy: courseData.allergy || '',
                         wCount: courseData.wCount || 0,
                         staff: courseData.staff,
                         pressedTime: courseData.pressedTime,
-                        timestamp: timestamp
+                        timestamp: timestamp,
+                        refillCount: courseData.refillCount || 0 // おかわり数も記録
                     });
                 });
             });
@@ -722,7 +732,6 @@
                     }
                     if (order.wCount > 0) html += `<span class="detail-tag w-tag">🔥 W×${order.wCount}</span>`;
                     if (order.allergy) html += `<span class="detail-tag allergy-tag">${order.allergy}NG</span>`;
-                    if (order.staff) html += `<span class="detail-tag staff-tag">👤 ${order.staff}</span>`;
                     html += `</div>`; 
                     html += `</div>`; 
                     html += '</div>'; 
