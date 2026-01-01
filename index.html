@@ -1608,7 +1608,7 @@
                 }
             } 
             // 肉・メイン系: 未 → 待 → 調理開始(肉/焼) → 注 → 提 → 未
-            else if (['ステーキ', '煮物', '焼物', '強肴', '合肴'].includes(courseName)) {
+            else if (['ステーキ', '煮物', ].includes(courseName)) {
                 if (state.status === 'none') {
                     state.status = 'wait';
                     state.pressedTime = getCurrentTime();
