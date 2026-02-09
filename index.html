@@ -2059,6 +2059,7 @@ if (courseName === 'ご飯' && state.status === 'serve') {
                 const roomName = room.name;
                 if (orderState[roomName] && orderState[roomName].courses[course]) {
                     orderState[roomName].courses[course].allergy = room.allergies[course];
+                orderState[roomName].courses[course].displayName = room.customCourseNames && room.customCourseNames[course] ? room.customCourseNames[course] : course;
                 }
             });
             

@@ -612,7 +612,7 @@
                     }
 
                     allOrders.push({
-                        dishName: courseName,
+                        dishName: courseData.displayName || courseName,
                         roomName: roomName,
                         people: count, // 修正した「数」をここに入れる
                         allergy: courseData.allergy || '',
