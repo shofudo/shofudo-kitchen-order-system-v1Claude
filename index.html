@@ -453,23 +453,28 @@
             align-items: flex-start;
             justify-content: flex-start;
             overflow-x: auto;
+            padding-left: 10px; /* 左端に少し余裕を持たせて、文字切れを防止します！ */
         }
 
         .course-item {
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-        }
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 47px;        /* ボタンの横幅を「58」で固定！ */
+    flex-shrink: 0;     /* 画面が狭くなっても潰さない！ */
+}
 
-        .course-name {
-            font-size: 15px;
-            color: #110a50;
-            margin-bottom: 1px;
-            font-weight: bold;
-            line-height: 1.1;
-        }
+.course-name {
+    font-size: 14px;    /* 文字を少し小さくして収まりを良く！ */
+    color: #110a50;
+    margin-bottom: 1px;
+    font-weight: bold;
+    line-height: 1.1;
+    white-space: nowrap; /* 文字を折り返さない！ */
+    letter-spacing: -0.5px; /* 文字の間隔を少し詰めて「しゃぶしゃぶ」を収める！ */
+}
 
         .course-button {
             width: 43px;
@@ -827,24 +832,34 @@
         const NORMAL_PLANS = {
             'スタンダード': { 
                 courses: ['吸物', '果菜盛り', '蒸物', '揚物', '煮物', 'ご飯', '甘味'],
-                color: '#455A64'
+                color: '#455A64' // 落ち着いたグレー
             },
             '和牛懐石': { 
                 courses: ['吸物', '果菜盛り', 'すき焼き', 'フライ', 'ステーキ', 'ご飯', '甘味'],
-                color: '#8E24AA'
+                color: '#8E24AA' // 紫
             },
             'ステーキ': { 
                 courses: ['吸物', '果菜盛り', '蒸物', '揚物', 'ステーキ', 'ご飯', '甘味'],
-                color: '#D32F2F'
+                color: '#D32F2F' // 赤
             },
             'しゃぶしゃぶ': { 
                 courses: ['吸物', '果菜盛り', 'しゃぶしゃぶ', '蒸物', '揚物', 'ご飯', '甘味'],
-                color: '#1976D2'
+                color: '#1976D2' // 青
             },
             '連泊': { 
                 courses: ['茶碗蒸し', '牛たたき', '焼物', '小鉢', '揚物', 'ご飯', '甘味'],
-                color: '#2E7D32'
+                color: '#2E7D32' // 緑
+            },
+            /* --- ここから色を分かりやすく変更！ --- */
+            'リピーター献立': { 
+                courses: ['うしお汁', '焼物', '唐揚げ', '煮物', '鯛茶漬け', '甘味'],
+                color: '#E67E22' // 【変更】鮮やかなオレンジ（特別感が出て目立ちます！）
+            },
+            'カスタマイズ': { 
+                courses: ['吸物', '果菜盛り', '蒸物', '揚物', '煮物', 'ご飯', '甘味'],
+                color: '#16A085' // 【変更】深いターコイズ（スタンダードとハッキリ区別できます！）
             }
+            /* ---------------------------------- */
         };
 
         // 2. 大晦日 (12/31) のプラン
@@ -1504,7 +1519,7 @@
 
             return `
                 <div class="course-item">
-                    <div class="course-name" style="color: ${planColor};">${course}</div>
+                    <div class="course-name" style="color: ${planColor};">${room.customCourseNames && room.customCourseNames[course] ? room.customCourseNames[course] : course}</div>
                     <div class="course-button ${statusClass}" style="${buttonStyle}" onclick="clickCourse('${room.name}', '${course}')">
                         ${allergyBadge}
                         ${wCountBadge}
@@ -1990,13 +2005,21 @@ if (courseName === 'ご飯' && state.status === 'serve') {
             const room = isCustom ? settings.customRooms[roomIndex] : settings.rooms[roomIndex];
             const courses = PLANS[room.plan].courses;
             
-            title.textContent = `${room.name} - アレルギー設定`;
+            title.textContent = `${room.name} - 詳細設定`; // タイトルを少し汎用的にしました
             
+            // カスタマイズプランの場合だけ、項目の名前を変える入力欄を出す魔法
+            const isManualPlan = room.plan === 'カスタマイズ';
+
             body.innerHTML = `
                 <div class="allergy-modal-content">
-                    ${courses.map(course => `
-                        <div class="allergy-input-group">
-                            <label>${course}</label>
+                    ${courses.map((course, idx) => `
+                        <div class="allergy-input-group" style="background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:10px;">
+                            ${isManualPlan ? 
+                                `<label style="color:#d32f2f;">項目の名前を変える:</label>
+                                 <input type="text" id="name-${course}" value="${room.customCourseNames ? room.customCourseNames[course] : course}" style="margin-bottom:10px; border-color:#d32f2f;">` 
+                                : `<label>${course}</label>`
+                            }
+                            <label>アレルギー・NG設定:</label>
                             <input type="text" 
                                    id="allergy-${course}" 
                                    value="${room.allergies[course] || ''}" 
@@ -2016,22 +2039,34 @@ if (courseName === 'ご飯' && state.status === 'serve') {
             const room = isCustom ? settings.customRooms[roomIndex] : settings.rooms[roomIndex];
             const courses = PLANS[room.plan].courses;
             
+            // カスタム名を保存する箱を用意
+            if (!room.customCourseNames) room.customCourseNames = {};
+
             courses.forEach(course => {
-                const input = document.getElementById(`allergy-${course}`);
-                if (input) {
-                    room.allergies[course] = input.value.trim();
-                    
-                    // orderStateにも反映
-                    const roomName = room.name;
-                    if (orderState[roomName] && orderState[roomName].courses[course]) {
-                        orderState[roomName].courses[course].allergy = input.value.trim();
-                    }
+                // アレルギーの保存
+                const allergyInput = document.getElementById(`allergy-${course}`);
+                if (allergyInput) {
+                    room.allergies[course] = allergyInput.value.trim();
+                }
+                
+                // 名前の保存（カスタマイズプランのみ）
+                const nameInput = document.getElementById(`name-${course}`);
+                if (nameInput) {
+                    room.customCourseNames[course] = nameInput.value.trim() || course;
+                }
+
+                // orderStateにも反映
+                const roomName = room.name;
+                if (orderState[roomName] && orderState[roomName].courses[course]) {
+                    orderState[roomName].courses[course].allergy = room.allergies[course];
                 }
             });
             
             saveOrderState();
+            saveSettingsQuiet(); // 設定全体を保存
             closeModal();
-            alert('アレルギー設定を保存しました');
+            alert('設定を保存しました');
+            renderOrderPage(); // 画面を更新！
         }
 
         // 食べるスピード選択モーダル
