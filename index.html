@@ -852,7 +852,7 @@
             },
             /* --- ここから色を分かりやすく変更！ --- */
             'リピーター献立': { 
-                courses: ['うしお汁', '焼物', '唐揚げ', '煮物', '鯛茶漬け', '甘味'],
+                courses: ['うしお汁', '蒸物', '唐揚げ', '煮物', '鯛茶漬け', '甘味'],
                 color: '#E67E22' // 【変更】鮮やかなオレンジ（特別感が出て目立ちます！）
             },
             'カスタマイズ': { 
@@ -919,6 +919,7 @@
 
         let orderState = {};
         let lastAction = null;
+        let hasLegacyCourseMigration = false;
 
         const EATING_SPEEDS = ['VF', 'F', 'LF', 'N', 'LS', 'S', 'VS'];
 
@@ -927,6 +928,56 @@
             loadSettings();
             renderIndexPage();
             renderOrderPage();
+
+            // 旧データ（リピーター献立の「焼物」）が残っている場合は、起動時に自動で「蒸物」へ移行して同期
+            if (hasLegacyCourseMigration) {
+                saveOrderState();
+            }
+        }
+
+
+        // 旧表記「焼物」→ 新表記「蒸物」への移行（リピーター献立のみ）
+        function migrateRepeaterLegacyCourse() {
+            let migrated = false;
+            const allRooms = [
+                ...(settings.rooms || []),
+                ...(settings.customRooms || [])
+            ];
+
+            allRooms.forEach(room => {
+                if (room.plan !== 'リピーター献立') return;
+
+                if (room.allergies && room.allergies['焼物'] !== undefined && room.allergies['蒸物'] === undefined) {
+                    room.allergies['蒸物'] = room.allergies['焼物'];
+                    delete room.allergies['焼物'];
+                    migrated = true;
+                }
+
+                if (room.customCourseNames && room.customCourseNames['焼物'] !== undefined && room.customCourseNames['蒸物'] === undefined) {
+                    room.customCourseNames['蒸物'] = room.customCourseNames['焼物'];
+                    delete room.customCourseNames['焼物'];
+                    migrated = true;
+                }
+
+                const roomState = orderState[room.name];
+                if (!roomState || !roomState.courses) return;
+
+                if (roomState.courses['焼物'] && !roomState.courses['蒸物']) {
+                    roomState.courses['蒸物'] = roomState.courses['焼物'];
+                    delete roomState.courses['焼物'];
+                    migrated = true;
+                } else if (roomState.courses['焼物'] && roomState.courses['蒸物']) {
+                    delete roomState.courses['焼物'];
+                    migrated = true;
+                }
+            });
+
+            if (migrated) {
+                localStorage.setItem('orderSettings', JSON.stringify(settings));
+                localStorage.setItem('orderState', JSON.stringify(orderState));
+            }
+
+            return migrated;
         }
 
         // 設定読み込み
@@ -963,6 +1014,8 @@
             if (savedOrder) {
                 orderState = JSON.parse(savedOrder);
             }
+
+            hasLegacyCourseMigration = migrateRepeaterLegacyCourse();
         }
 
         // 設定保存（修正版：データを消さないようにしました）
