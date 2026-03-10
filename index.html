@@ -1683,7 +1683,7 @@ if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].inclu
                 }
             } 
             // 肉・メイン系: 未 → 待 → 調理開始(肉/焼) → 注 → 提 → 未
-            else if (['ステーキ', '煮物', '連泊ｽﾃｰｷ', '連泊唐揚げ'].includes(courseName)) {
+            else if (['ステーキ', '煮物', '連泊ｽﾃｰｷ', ].includes(courseName)) {
                 if (state.status === 'none') {
                     state.status = 'wait';
                     state.pressedTime = getCurrentTime();
