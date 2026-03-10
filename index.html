@@ -847,7 +847,7 @@
                 color: '#1976D2' // 青
             },
             '連泊': { 
-                courses: ['茶碗蒸し', '牛たたき', '焼物', '小鉢', '揚物', 'ご飯', '甘味'],
+                courses: ['うしお汁', '鯛の細造り', 'ﾔｼｵﾏｽ胡桃味噌', '連泊唐揚げ', '連泊ｽﾃｰｷ', '連泊御飯', '連泊甘味'],
                 color: '#2E7D32' // 緑
             },
             /* --- ここから色を分かりやすく変更！ --- */
@@ -1563,7 +1563,7 @@
             }
 
             // ケーキ・プレートは丸ボタンの下に表示
-            const cakeBadge = (course === '甘味' && (room.hasCake || room.hasPlate)) ? 
+            const cakeBadge = (['甘味', '連泊甘味'].includes(course) && (room.hasCake || room.hasPlate)) ? 
                 `${room.hasCake ? '<span class="cake-badge">ケーキ</span>' : ''}${room.hasPlate ? '<span class="cake-badge">プレート</span>' : ''}` : '';
 
             // スタッフとW数は丸ボタンの右側に表示
@@ -1661,14 +1661,14 @@ if (courseName === '鮎ソバ') {
 }
 
 // 2. 「ご飯」なら、今まで通り「提（出し終わり）」になってからおかわり画面を出す
-if (courseName === 'ご飯' && state.status === 'serve') {
+if (['ご飯', '連泊御飯'].includes(courseName) && state.status === 'serve') {
     showRefillModal(roomName, courseName);
     return;
 }
 
             // 状態遷移ロジック
             // 果菜盛り系: 未 → 待 → 提 → 未
-            if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛'].includes(courseName)) {
+            if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].includes(courseName)) {
                 if (state.status === 'none') {
                     state.status = 'wait';
                     state.pressedTime = getCurrentTime();
@@ -1684,7 +1684,7 @@ if (courseName === 'ご飯' && state.status === 'serve') {
                 }
             } 
             // 肉・メイン系: 未 → 待 → 調理開始(肉/焼) → 注 → 提 → 未
-            else if (['ステーキ', '煮物', ].includes(courseName)) {
+            else if (['ステーキ', '煮物', '連泊ｽﾃｰｷ'].includes(courseName)) {
                 if (state.status === 'none') {
                     state.status = 'wait';
                     state.pressedTime = getCurrentTime();
