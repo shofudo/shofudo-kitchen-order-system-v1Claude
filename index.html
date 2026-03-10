@@ -1667,8 +1667,11 @@ if (['ご飯', '連泊御飯'].includes(courseName) && state.status === 'serve')
 }
 
             // 状態遷移ロジック
+            const simpleFlowCourses = ['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'];
+            const meatFlowCourses = ['ステーキ', '煮物', '連泊ｽﾃｰｷ'];
+
             // 果菜盛り系: 未 → 待 → 提 → 未
-            if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].includes(courseName)) {
+            if (simpleFlowCourses.includes(courseName)) {
                 if (state.status === 'none') {
                     state.status = 'wait';
                     state.pressedTime = getCurrentTime();
@@ -1684,7 +1687,7 @@ if (['ご飯', '連泊御飯'].includes(courseName) && state.status === 'serve')
                 }
             } 
             // 肉・メイン系: 未 → 待 → 調理開始(肉/焼) → 注 → 提 → 未
-            else if (['ステーキ', '煮物', '連泊ｽﾃｰｷ'].includes(courseName)) {
+            else if (meatFlowCourses.includes(courseName)) {
                 if (state.status === 'none') {
                     state.status = 'wait';
                     state.pressedTime = getCurrentTime();
