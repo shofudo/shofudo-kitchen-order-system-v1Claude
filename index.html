@@ -1667,9 +1667,8 @@ if (['ご飯', '連泊御飯'].includes(courseName) && state.status === 'serve')
 }
 
             // 状態遷移ロジック
-            // 果菜盛り系: 未 → 待 → 提 → 未
-            if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛'].includes(courseName)) {
-                if (state.status === 'none') {
+// 果菜盛り系: 未 → 待 → 提 → 未（キッチン通知なし）
+if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].includes(courseName)) {                if (state.status === 'none') {
                     state.status = 'wait';
                     state.pressedTime = getCurrentTime();
                     showTimeModal(roomName, courseName);
