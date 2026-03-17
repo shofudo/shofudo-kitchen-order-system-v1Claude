@@ -114,6 +114,14 @@
             border: 2px solid #3498db;
         }
 
+        .dish-card.elapsed-warning {
+            border-color: #f39c12;
+        }
+
+        .dish-card.elapsed-urgent {
+            border-color: #e74c3c;
+        }
+
         .dish-header {
             display: flex;
             justify-content: space-between;
@@ -121,6 +129,14 @@
             margin-bottom: 12px;
             padding-bottom: 12px;
             border-bottom: 3px solid #3498db;
+        }
+
+        .dish-card.elapsed-warning .dish-header {
+            border-bottom-color: #f39c12;
+        }
+
+        .dish-card.elapsed-urgent .dish-header {
+            border-bottom-color: #e74c3c;
         }
 
         .dish-name-container {
@@ -153,6 +169,35 @@
             box-shadow: 0 3px 8px rgba(231, 76, 60, 0.3);
             min-width: 100px;
             text-align: center;
+        }
+
+        .dish-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        .dish-time,
+        .dish-elapsed {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .dish-time {
+            color: #555;
+        }
+
+        .dish-elapsed {
+            color: #3498db;
+        }
+
+        .dish-elapsed.elapsed-warning {
+            color: #f39c12;
+        }
+
+        .dish-elapsed.elapsed-urgent {
+            color: #e74c3c;
         }
 
         /* 注文リスト */
@@ -561,6 +606,32 @@
             });
         }
 
+        function getElapsedInfo(startTime) {
+            if (!startTime || startTime <= 0) {
+                return {
+                    elapsedMinutes: null,
+                    elapsedText: '',
+                    className: ''
+                };
+            }
+
+            const elapsedMs = Math.max(0, Date.now() - startTime);
+            const elapsedMinutes = Math.floor(elapsedMs / 60000);
+
+            let className = '';
+            if (elapsedMinutes >= 5) {
+                className = 'elapsed-urgent';
+            } else if (elapsedMinutes >= 3) {
+                className = 'elapsed-warning';
+            }
+
+            return {
+                elapsedMinutes,
+                elapsedText: `${elapsedMinutes}分経過`,
+                className
+            };
+        }
+
         // ★タップした時に呼び出される機能
         window.toggleCheck = function(dishName, roomName) {
             const key = `${dishName}_${roomName}`;
@@ -699,18 +770,19 @@
                     timeString = `${hours}:${minutes}`; 
                 }
                 
-                const isOldOrder = (Date.now() - batch.startTime > 300000) && batch.startTime !== 0;
+                const elapsedInfo = getElapsedInfo(batch.startTime);
 
                 html += `
-                    <div class="dish-card" style="${isOldOrder ? 'border-color: #e74c3c;' : ''}">
+                    <div class="dish-card ${elapsedInfo.className}">
                         <div class="dish-header">
                             <div class="dish-name-container">
                                 <div class="dish-name">${dishName}</div>
                                 ${furigana ? `<div class="dish-furigana">${furigana}</div>` : ''}
                             </div>
-                            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
+                            <div class="dish-meta">
                                 <div class="dish-total">${totalPeople}名</div>
-                                ${timeString ? `<div style="font-size: 16px; font-weight: bold; color: #555;">🕒 ${timeString}</div>` : ''}
+                                ${timeString ? `<div class="dish-time">🕒 ${timeString}</div>` : ''}
+                                ${elapsedInfo.elapsedText ? `<div class="dish-elapsed ${elapsedInfo.className}">${elapsedInfo.elapsedText}</div>` : ''}
                             </div>
                         </div>
                         <div class="order-list">
