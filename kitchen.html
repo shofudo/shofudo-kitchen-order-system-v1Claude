@@ -645,6 +645,7 @@
         const NOTIFICATION_SETTINGS_KEY = 'kitchenNotificationSettings';
         const UNACKNOWLEDGED_ORDERS_KEY = 'kitchenUnacknowledgedOrders';
         const NOTIFICATION_SOUND_PATH = './assets/notification-voice.mp3';
+        const NOTIFICATION_SOUND_COOLDOWN_MS = 5000;
         const NOTIFICATION_REPEAT_INTERVAL_MS = 4000;
 
         let previousOrderStatuses = {};
@@ -659,6 +660,7 @@
         let unacknowledgedOrders = JSON.parse(localStorage.getItem(UNACKNOWLEDGED_ORDERS_KEY)) || {};
         let notificationRepeatTimer = null;
         let notificationAudio = null;
+        let lastNotificationSoundAt = 0;
 
         const loadingTimeout = setTimeout(() => {
             if (!initialDataLoaded) {
@@ -848,7 +850,7 @@
             initAudioContext();
             setTimeout(() => {
                 if (audioInitialized) {
-                    playNotificationSound();
+                    playNotificationSound({ force: true });
                     btn.classList.remove('testing');
                     btn.classList.add('success');
                     btn.innerHTML = '✅ 通知音が有効です';
@@ -901,20 +903,30 @@
             }
         }
 
-        async function playNotificationSound() {
+        async function playNotificationSound(options = {}) {
+            const { force = false } = options;
+            const now = Date.now();
+
+            if (!force && now - lastNotificationSoundAt < NOTIFICATION_SOUND_COOLDOWN_MS) {
+                return false;
+            }
+
             if (notificationSettings.soundMode === 'voice') {
                 try {
                     const audio = getNotificationAudio();
                     audio.pause();
                     audio.currentTime = 0;
                     await audio.play();
-                    return;
+                    lastNotificationSoundAt = now;
+                    return true;
                 } catch (error) {
                     console.warn('音声ファイルの再生に失敗したため、電子音に切り替えます。', error);
                 }
             }
 
             playFallbackNotificationSound();
+            lastNotificationSoundAt = now;
+            return true;
         }
 
         onValue(ordersRef, (snapshot) => {
