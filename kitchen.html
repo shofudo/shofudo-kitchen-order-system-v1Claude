@@ -85,6 +85,72 @@
         }
         .sound-test-btn.hidden { display: none; }
 
+        .notification-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe08a 100%);
+            border: 2px solid #ffb300;
+            box-shadow: 0 4px 12px rgba(255, 179, 0, 0.18);
+        }
+
+        .notification-banner.hidden {
+            display: none;
+        }
+
+        .notification-banner.muted {
+            background: linear-gradient(135deg, #eceff1 0%, #cfd8dc 100%);
+            border-color: #90a4ae;
+            box-shadow: none;
+        }
+
+        .notification-banner-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .notification-banner-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #8a4b00;
+        }
+
+        .notification-banner.muted .notification-banner-title {
+            color: #455a64;
+        }
+
+        .notification-banner-subtitle {
+            font-size: 14px;
+            color: #7a5a00;
+        }
+
+        .notification-banner.muted .notification-banner-subtitle {
+            color: #546e7a;
+        }
+
+        .mute-notification-btn {
+            padding: 10px 18px;
+            font-size: 15px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #ff7043 0%, #f4511e 100%);
+            border: none;
+            border-radius: 999px;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(244, 81, 30, 0.28);
+        }
+
+        .notification-banner.muted .mute-notification-btn {
+            background: linear-gradient(135deg, #78909c 0%, #607d8b 100%);
+            box-shadow: none;
+        }
+
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
@@ -286,6 +352,37 @@
             background: #95a5a6;
         }
 
+        .order-item.new-order {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
+            border-left-color: #ff9800;
+            box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.12);
+            animation: newOrderPulse 1.5s ease-in-out infinite;
+        }
+
+        .order-item.new-order.checked {
+            animation: none;
+            box-shadow: none;
+        }
+
+        .new-order-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #ff9800;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            letter-spacing: 0.02em;
+        }
+
+        @keyframes newOrderPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.18); }
+            50% { box-shadow: 0 0 0 6px rgba(255, 152, 0, 0.06); }
+        }
+
         .tags-right {
             display: flex;
             flex-wrap: wrap;
@@ -352,6 +449,13 @@
             .dish-name { font-size: 24px; }
             .dish-furigana { font-size: 20px; }
             .dish-total { font-size: 32px; }
+            .notification-banner {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .mute-notification-btn {
+                width: 100%;
+            }
         }
 
         .loading {
@@ -383,6 +487,14 @@
         <button class="sound-test-btn" id="sound-test-btn" onclick="testNotificationSound()">
             🔔 通知音テスト
         </button>
+    </div>
+
+    <div class="notification-banner hidden" id="notification-banner">
+        <div class="notification-banner-text">
+            <div class="notification-banner-title" id="notification-banner-title">新規オーダーがあります</div>
+            <div class="notification-banner-subtitle" id="notification-banner-subtitle">通知を止めても、タグ確認までは画面に残ります。</div>
+        </div>
+        <button class="mute-notification-btn" id="mute-notification-btn" onclick="muteNotifications()">通知停止</button>
     </div>
 
     <div id="content">
@@ -441,13 +553,23 @@
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
         const ordersRef = ref(database, 'orders');
+        const NOTIFICATION_SETTINGS_KEY = 'kitchenNotificationSettings';
+        const UNACKNOWLEDGED_ORDERS_KEY = 'kitchenUnacknowledgedOrders';
+        const NOTIFICATION_SOUND_PATH = './assets/notification-voice.mp3';
+        const NOTIFICATION_REPEAT_INTERVAL_MS = 4000;
 
         let previousOrderStatuses = {};
         let initialDataLoaded = false;
+        let hasProcessedInitialSnapshot = false;
         
         // ★【ノート機能】チェックした項目を記憶しておく箱
         // ブラウザを閉じても覚えているように localStorage を使います
         let checkedItems = JSON.parse(localStorage.getItem('kitchenCheckedItems')) || {};
+        let notificationSettings = loadNotificationSettings();
+        let notificationMuted = !!notificationSettings.notificationMuted;
+        let unacknowledgedOrders = JSON.parse(localStorage.getItem(UNACKNOWLEDGED_ORDERS_KEY)) || {};
+        let notificationRepeatTimer = null;
+        let notificationAudio = null;
 
         const loadingTimeout = setTimeout(() => {
             if (!initialDataLoaded) {
@@ -457,6 +579,109 @@
 
         let audioContext = null;
         let audioInitialized = false;
+
+        function loadNotificationSettings() {
+            const saved = JSON.parse(localStorage.getItem(NOTIFICATION_SETTINGS_KEY)) || {};
+            return {
+                soundMode: saved.soundMode || 'voice',
+                notificationMuted: !!saved.notificationMuted
+            };
+        }
+
+        function saveNotificationSettings() {
+            notificationSettings.notificationMuted = notificationMuted;
+            localStorage.setItem(NOTIFICATION_SETTINGS_KEY, JSON.stringify(notificationSettings));
+        }
+
+        function saveUnacknowledgedOrders() {
+            localStorage.setItem(UNACKNOWLEDGED_ORDERS_KEY, JSON.stringify(unacknowledgedOrders));
+        }
+
+        function getOrderItemKey(dishName, roomName) {
+            return `${dishName}_${roomName}`;
+        }
+
+        function getNotificationAudio() {
+            if (!notificationAudio) {
+                notificationAudio = new Audio(NOTIFICATION_SOUND_PATH);
+                notificationAudio.preload = 'auto';
+            }
+            return notificationAudio;
+        }
+
+        function stopNotificationAudio() {
+            const audio = getNotificationAudio();
+            audio.pause();
+            audio.currentTime = 0;
+        }
+
+        function hasPendingNotifications() {
+            return Object.keys(unacknowledgedOrders).length > 0;
+        }
+
+        function updateNotificationBanner() {
+            const banner = document.getElementById('notification-banner');
+            const title = document.getElementById('notification-banner-title');
+            const subtitle = document.getElementById('notification-banner-subtitle');
+            const button = document.getElementById('mute-notification-btn');
+
+            if (!banner || !title || !subtitle || !button) return;
+
+            const pendingCount = Object.keys(unacknowledgedOrders).length;
+
+            if (pendingCount === 0) {
+                banner.classList.add('hidden');
+                banner.classList.remove('muted');
+                return;
+            }
+
+            banner.classList.remove('hidden');
+
+            if (notificationMuted) {
+                banner.classList.add('muted');
+                title.textContent = `新規オーダー ${pendingCount}件を確認待ちです`;
+                subtitle.textContent = '音は停止中です。新しい注文が入ると通知を再開します。';
+                button.textContent = '通知停止中';
+            } else {
+                banner.classList.remove('muted');
+                title.textContent = `新規オーダー ${pendingCount}件があります`;
+                subtitle.textContent = '気づいたら「通知停止」を押してください。提供後はタグを押して完了にします。';
+                button.textContent = '通知停止';
+            }
+        }
+
+        function clearNotificationTimer() {
+            clearTimeout(notificationRepeatTimer);
+            notificationRepeatTimer = null;
+        }
+
+        function scheduleNotificationLoop() {
+            clearNotificationTimer();
+            if (notificationMuted || !hasPendingNotifications()) return;
+
+            notificationRepeatTimer = setTimeout(async () => {
+                if (notificationMuted || !hasPendingNotifications()) return;
+                await playNotificationSound();
+                scheduleNotificationLoop();
+            }, NOTIFICATION_REPEAT_INTERVAL_MS);
+        }
+
+        function startNotificationLoop() {
+            if (!hasPendingNotifications()) return;
+            notificationMuted = false;
+            saveNotificationSettings();
+            updateNotificationBanner();
+            playNotificationSound();
+            scheduleNotificationLoop();
+        }
+
+        window.muteNotifications = function() {
+            notificationMuted = true;
+            stopNotificationAudio();
+            clearNotificationTimer();
+            saveNotificationSettings();
+            updateNotificationBanner();
+        };
 
         function initAudioContext() {
             if (audioInitialized) return;
@@ -471,7 +696,11 @@
             }
         }
 
-        window.addEventListener('load', initAudioContext);
+        window.addEventListener('load', () => {
+            initAudioContext();
+            getNotificationAudio();
+            updateNotificationBanner();
+        });
         document.addEventListener('click', initAudioContext, { once: true });
         document.addEventListener('touchstart', initAudioContext, { once: true });
 
@@ -500,11 +729,11 @@
             }, 300);
         }
 
-        function playNotificationSound() {
+        function playFallbackNotificationSound() {
             if (!audioContext || !audioInitialized) {
                 initAudioContext();
                 setTimeout(() => {
-                    if (audioInitialized) playNotificationSound();
+                    if (audioInitialized) playFallbackNotificationSound();
                 }, 100);
                 return;
             }
@@ -536,16 +765,35 @@
             }
         }
 
+        async function playNotificationSound() {
+            if (notificationSettings.soundMode === 'voice') {
+                try {
+                    const audio = getNotificationAudio();
+                    audio.pause();
+                    audio.currentTime = 0;
+                    await audio.play();
+                    return;
+                } catch (error) {
+                    console.warn('音声ファイルの再生に失敗したため、電子音に切り替えます。', error);
+                }
+            }
+
+            playFallbackNotificationSound();
+        }
+
         onValue(ordersRef, (snapshot) => {
+            const isInitialSnapshot = !hasProcessedInitialSnapshot;
             if (!initialDataLoaded) {
                 initialDataLoaded = true;
                 clearTimeout(loadingTimeout);
                 console.log('Firebase接続成功');
             }
+            hasProcessedInitialSnapshot = true;
             const orderData = snapshot.val();
-            checkForNewOrders(orderData);
+            checkForNewOrders(orderData, isInitialSnapshot);
             updateDisplay(orderData);
             updateLastUpdate();
+            updateNotificationBanner();
         }, (error) => {
             if (error.code === 'PERMISSION_DENIED') {
                 showError('権限エラー', 'Firebaseデータベースへのアクセス権限がありません。');
@@ -556,32 +804,56 @@
             }
         });
 
-        function checkForNewOrders(orderData) {
-            if (!orderData) return;
+        function checkForNewOrders(orderData, isInitialSnapshot) {
+            const activeOrderKeys = {};
             let hasNewOrder = false;
+            if (!orderData) {
+                unacknowledgedOrders = {};
+                saveUnacknowledgedOrders();
+                clearNotificationTimer();
+                updateNotificationBanner();
+                return;
+            }
             Object.entries(orderData).forEach(([roomName, roomData]) => {
                 if (!roomData.courses) return;
                 Object.entries(roomData.courses).forEach(([courseName, courseData]) => {
+                    const dishName = courseData.displayName || courseName;
+                    const displayKey = getOrderItemKey(dishName, roomName);
                     const key = `${roomName}_${courseName}`;
                     const currentStatus = courseData.status;
                     const previousStatus = previousOrderStatuses[key];
-                    if (initialDataLoaded) {
-                        if (previousStatus && previousStatus !== 'order' && currentStatus === 'order') {
+                    if (currentStatus === 'order') {
+                        activeOrderKeys[displayKey] = true;
+                    }
+                    if (!isInitialSnapshot) {
+                        if (previousStatus !== 'order' && currentStatus === 'order') {
                             hasNewOrder = true;
                             // 新しい注文が来たら、その料理のチェック記録を消す（復活させる）
                             // ※同じ部屋で同じ料理が再度注文された場合の考慮
-                            const checkKey = `${courseName}_${roomName}`;
-                            if (checkedItems[checkKey]) {
-                                delete checkedItems[checkKey];
+                            if (checkedItems[displayKey]) {
+                                delete checkedItems[displayKey];
                                 localStorage.setItem('kitchenCheckedItems', JSON.stringify(checkedItems));
                             }
+                            unacknowledgedOrders[displayKey] = {
+                                dishName: dishName,
+                                roomName: roomName,
+                                timestamp: courseData.orderTimestamp || Date.now()
+                            };
                         }
                     }
                     previousOrderStatuses[key] = currentStatus;
                 });
             });
+            Object.keys(unacknowledgedOrders).forEach((key) => {
+                if (!activeOrderKeys[key] || checkedItems[key]) {
+                    delete unacknowledgedOrders[key];
+                }
+            });
+            saveUnacknowledgedOrders();
             if (hasNewOrder) {
-                playNotificationSound();
+                startNotificationLoop();
+            } else if (!hasPendingNotifications()) {
+                clearNotificationTimer();
             }
         }
 
@@ -634,17 +906,25 @@
 
         // ★タップした時に呼び出される機能
         window.toggleCheck = function(dishName, roomName) {
-            const key = `${dishName}_${roomName}`;
+            const key = getOrderItemKey(dishName, roomName);
             
             // チェック状態を反転させる（オンならオフ、オフならオン）
             if (checkedItems[key]) {
                 delete checkedItems[key];
             } else {
                 checkedItems[key] = true;
+                if (unacknowledgedOrders[key]) {
+                    delete unacknowledgedOrders[key];
+                    saveUnacknowledgedOrders();
+                }
             }
             
             // 忘れずノート（localStorage）に保存
             localStorage.setItem('kitchenCheckedItems', JSON.stringify(checkedItems));
+            if (!hasPendingNotifications()) {
+                clearNotificationTimer();
+            }
+            updateNotificationBanner();
             
             // 画面の見た目を更新するために、要素を探してクラスを付け外しする
             // （画面全体を再描画しなくても、ここだけ速く反応させるため）
@@ -790,12 +1070,16 @@
                 
                 sortedOrders.forEach(order => {
                     // ★チェック状態を確認
-                    const key = `${order.dishName}_${order.roomName}`;
+                    const key = getOrderItemKey(order.dishName, order.roomName);
                     const isChecked = checkedItems[key] ? 'checked' : '';
+                    const isNewOrder = unacknowledgedOrders[key] && !checkedItems[key] ? 'new-order' : '';
 
                     // ★クリックで toggleCheck を呼び出す設定を追加
                     // data-key は、後でクラスを操作するための目印です
-                    html += `<div class="order-item ${isChecked}" data-key="${key}" onclick="toggleCheck('${order.dishName}', '${order.roomName}')">`;
+                    html += `<div class="order-item ${isChecked} ${isNewOrder}" data-key="${key}" onclick="toggleCheck('${order.dishName}', '${order.roomName}')">`;
+                    if (isNewOrder) {
+                        html += `<div class="new-order-badge">NEW ORDER</div>`;
+                    }
                     html += `<div class="check-mark">✔</div>`; // チェックマーク
                     html += `<div class="room-row">`;
                     html += `
