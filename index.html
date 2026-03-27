@@ -1542,7 +1542,7 @@
             let buttonStyle = '';
             
             if (state.status === 'wait') {
-                buttonText = state.time ? state.time.split(':')[1] : '待';
+                buttonText = state.time ? (state.time === '声がけ' ? '声' : state.time.split(':')[1]) : '待';
                 statusClass = 'status-wait';
                 buttonStyle = `border-color: ${planColor};`;
             } else if (state.status === 'order') {
@@ -1550,7 +1550,7 @@
                 statusClass = 'status-order';
                 buttonStyle = `border-color: ${planColor};`;
             } else if (state.status === 'meat') {
-                buttonText = state.time ? state.time.split(':')[1] : '肉';
+                buttonText = state.time ? (state.time === '声がけ' ? '声' : state.time.split(':')[1]) : '肉';
                 statusClass = 'status-meat';
                 buttonStyle = `border-color: ${planColor};`;
             } else if (state.status === 'serve') {
@@ -1599,7 +1599,7 @@
             let buttonStyle = '';
             
             if (state.status === 'wait') {
-                buttonText = state.time ? state.time.split(':')[1] : '待';
+                buttonText = state.time ? (state.time === '声がけ' ? '声' : state.time.split(':')[1]) : '待';
                 statusClass = 'status-wait';
                 buttonStyle = `border-color: ${planColor};`;
             } else if (state.status === 'order') {
