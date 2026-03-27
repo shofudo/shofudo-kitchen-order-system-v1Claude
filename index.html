@@ -855,10 +855,6 @@
                 courses: ['うしお汁', '蒸物', '唐揚げ', '煮物', '鯛茶漬け', '甘味'],
                 color: '#E67E22' // 【変更】鮮やかなオレンジ（特別感が出て目立ちます！）
             },
-            'カスタマイズ': { 
-                courses: ['吸物', '果菜盛り', '蒸物', '揚物', '煮物', 'ご飯', '甘味'],
-                color: '#16A085' // 【変更】深いターコイズ（スタンダードとハッキリ区別できます！）
-            }
             /* ---------------------------------- */
         };
 
@@ -935,6 +931,16 @@
             }
         }
 
+
+        // 旧「カスタマイズ」プラン → 「スタンダード」への移行
+        function migrateCustomizePlan() {
+            const allRooms = [...(settings.rooms || []), ...(settings.customRooms || [])];
+            allRooms.forEach(room => {
+                if (room.plan === 'カスタマイズ') {
+                    room.plan = 'スタンダード';
+                }
+            });
+        }
 
         // 旧表記「焼物」→ 新表記「蒸物」への移行（リピーター献立のみ）
         function migrateRepeaterLegacyCourse() {
@@ -1015,6 +1021,7 @@
                 orderState = JSON.parse(savedOrder);
             }
 
+            migrateCustomizePlan();
             hasLegacyCourseMigration = migrateRepeaterLegacyCourse();
         }
 
@@ -1113,9 +1120,13 @@
                             wCount: 0,
                             allergy: allergy
                         };
+                        // カスタム表示名があれば反映する
+                        if (room.customCourseNames && room.customCourseNames[course]) {
+                            orderState[room.name].courses[course].displayName = room.customCourseNames[course];
+                        }
                     }
                 });
-                
+
                 // --- 追加料理 ---
                 const roomIndex = room.isCustom ? 
                     'custom-' + settings.customRooms.indexOf(room) : 
@@ -1572,8 +1583,8 @@
 
             return `
                 <div class="course-item">
-                    <div class="course-name" style="color: ${planColor};">${room.customCourseNames && room.customCourseNames[course] ? room.customCourseNames[course] : course}</div>
-                    <div class="course-button ${statusClass}" style="${buttonStyle}" onclick="clickCourse('${room.name}', '${course}')">
+                    <div class="course-name" style="color: ${planColor};">${room.customCourseNames && room.customCourseNames[course] && room.customCourseNames[course] !== course ? '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#e67e22;margin-right:4px;vertical-align:middle;flex-shrink:0;"></span>' : ''}${room.customCourseNames && room.customCourseNames[course] ? room.customCourseNames[course] : course}</div>
+                    <div class="course-button ${statusClass}" style="${buttonStyle}${room.customCourseNames && room.customCourseNames[course] && room.customCourseNames[course] !== course ? ' outline: 2px solid #e67e22; outline-offset: 2px;' : ''}" onclick="clickCourse('${room.name}', '${course}')">
                         ${allergyBadge}
                         ${wCountBadge}
                         ${buttonText}
@@ -2059,22 +2070,16 @@ if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].inclu
             
             title.textContent = `${room.name} - 詳細設定`; // タイトルを少し汎用的にしました
             
-            // カスタマイズプランの場合だけ、項目の名前を変える入力欄を出す魔法
-            const isManualPlan = room.plan === 'カスタマイズ';
-
             body.innerHTML = `
                 <div class="allergy-modal-content">
                     ${courses.map((course, idx) => `
                         <div class="allergy-input-group" style="background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:10px;">
-                            ${isManualPlan ? 
-                                `<label style="color:#d32f2f;">項目の名前を変える:</label>
-                                 <input type="text" id="name-${course}" value="${room.customCourseNames ? room.customCourseNames[course] : course}" style="margin-bottom:10px; border-color:#d32f2f;">` 
-                                : `<label>${course}</label>`
-                            }
+                            <label style="color:#555;">表示名（変更可）:</label>
+                            <input type="text" id="name-${course}" value="${(room.customCourseNames && room.customCourseNames[course]) || course}" style="margin-bottom:10px;">
                             <label>アレルギー・NG設定:</label>
-                            <input type="text" 
-                                   id="allergy-${course}" 
-                                   value="${room.allergies[course] || ''}" 
+                            <input type="text"
+                                   id="allergy-${course}"
+                                   value="${room.allergies[course] || ''}"
                                    placeholder="例: えび・かに">
                         </div>
                     `).join('')}
@@ -2101,7 +2106,7 @@ if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].inclu
                     room.allergies[course] = allergyInput.value.trim();
                 }
                 
-                // 名前の保存（カスタマイズプランのみ）
+                // 名前の保存
                 const nameInput = document.getElementById(`name-${course}`);
                 if (nameInput) {
                     room.customCourseNames[course] = nameInput.value.trim() || course;
