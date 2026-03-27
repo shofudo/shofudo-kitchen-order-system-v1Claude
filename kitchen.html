@@ -495,21 +495,48 @@
 
         .empty-state {
             text-align: center;
-            padding: 60px 30px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 80px 40px;
+            background: linear-gradient(160deg, #0d1f15 0%, #1a3324 50%, #0d1f15 100%);
+            border-radius: 20px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+            border: 1px solid rgba(52, 211, 120, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .empty-state::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(52, 211, 120, 0.08) 0%, transparent 70%);
+            animation: kitchenPulse 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes kitchenPulse {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
         }
 
         .empty-state h2 {
-            font-size: 32px;
-            margin-bottom: 15px;
-            color: #2c3e50;
+            font-size: 52px;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            margin-bottom: 18px;
+            color: #34d378;
+            text-shadow: 0 0 30px rgba(52, 211, 120, 0.4);
+            position: relative;
         }
 
         .empty-state p {
-            font-size: 20px;
-            color: #7f8c8d;
+            font-size: 18px;
+            letter-spacing: 0.12em;
+            color: rgba(255, 255, 255, 0.45);
+            position: relative;
         }
 
         @media (max-width: 768px) {
@@ -1132,8 +1159,8 @@
             if (allOrders.length === 0) {
                 content.innerHTML = `
                     <div class="empty-state">
-                        <h2>✅ 全ての注文が処理済みです</h2>
-                        <p>新しい注文をお待ちしています</p>
+                        <h2>KITCHEN CLEAR</h2>
+                        <p>— 次のオーダーを待機中 —</p>
                     </div>
                 `;
                 return;
