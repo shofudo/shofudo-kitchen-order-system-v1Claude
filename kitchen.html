@@ -23,8 +23,8 @@
 
         body {
             font-family: 'Hiragino Sans', 'Meiryo', sans-serif;
-            background: #f5f5f5;
-            color: #333;
+            background: #0d1117;
+            color: #e6edf3;
             padding: 5px;
             overflow-x: hidden;
         }
@@ -36,23 +36,24 @@
             justify-content: space-between;
             gap: 15px;
             padding: 8px 15px;
-            background: white;
+            background: #161b22;
             border-radius: 8px;
             margin-bottom: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .header h1 {
             font-size: 20px;
             font-weight: bold;
             margin: 0;
-            color: #2c3e50;
+            color: #e6edf3;
             white-space: nowrap;
         }
 
         .last-update {
             font-size: 13px;
-            color: #7f8c8d;
+            color: rgba(255, 255, 255, 0.4);
             white-space: nowrap;
         }
 
@@ -241,19 +242,21 @@
 
         /* カード */
         .dish-card {
-            background: white;
+            background: #161b22;
             border-radius: 12px;
             padding: 15px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
-            border: 2px solid #3498db;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(56, 139, 253, 0.2);
+            border: 2px solid rgba(56, 139, 253, 0.5);
         }
 
         .dish-card.elapsed-warning {
-            border-color: #f39c12;
+            border-color: rgba(243, 156, 18, 0.6);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(243, 156, 18, 0.12);
         }
 
         .dish-card.elapsed-urgent {
-            border-color: #e74c3c;
+            border-color: rgba(231, 76, 60, 0.7);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 0 24px rgba(231, 76, 60, 0.18);
         }
 
         .dish-header {
@@ -262,15 +265,15 @@
             align-items: center;
             margin-bottom: 12px;
             padding-bottom: 12px;
-            border-bottom: 3px solid #3498db;
+            border-bottom: 2px solid rgba(56, 139, 253, 0.3);
         }
 
         .dish-card.elapsed-warning .dish-header {
-            border-bottom-color: #f39c12;
+            border-bottom-color: rgba(243, 156, 18, 0.4);
         }
 
         .dish-card.elapsed-urgent .dish-header {
-            border-bottom-color: #e74c3c;
+            border-bottom-color: rgba(231, 76, 60, 0.5);
         }
 
         .dish-name-container {
@@ -282,25 +285,26 @@
         .dish-name {
             font-size: 28px;
             font-weight: bold;
-            color: #2c3e50;
+            color: #ffffff;
             line-height: 1.2;
         }
 
         .dish-furigana {
             font-size: 24px;
             font-weight: bold;
-            color: #7f8c8d;
+            color: rgba(255, 255, 255, 0.45);
             line-height: 1.2;
         }
 
         .dish-total {
             font-size: 40px;
             font-weight: bold;
-            color: #e74c3c;
-            background: #ffe6e6;
+            color: #ff6b6b;
+            background: rgba(231, 76, 60, 0.15);
             padding: 10px 20px;
             border-radius: 50px;
-            box-shadow: 0 3px 8px rgba(231, 76, 60, 0.3);
+            box-shadow: 0 3px 12px rgba(231, 76, 60, 0.25);
+            border: 1px solid rgba(231, 76, 60, 0.35);
             min-width: 100px;
             text-align: center;
         }
@@ -319,19 +323,19 @@
         }
 
         .dish-time {
-            color: #555;
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .dish-elapsed {
-            color: #3498db;
+            color: #58a6ff;
         }
 
         .dish-elapsed.elapsed-warning {
-            color: #f39c12;
+            color: #ffa726;
         }
 
         .dish-elapsed.elapsed-urgent {
-            color: #e74c3c;
+            color: #ff5252;
         }
 
         /* 注文リスト */
@@ -343,10 +347,10 @@
 
         /* ★ここが重要：クリックできる行のデザイン */
         .order-item {
-            background: #f8f9fa;
+            background: rgba(255, 255, 255, 0.04);
             padding: 10px 12px;
             border-radius: 10px;
-            border-left: 6px solid #3498db;
+            border-left: 6px solid #388bfd;
             cursor: pointer; /* 指マークにする */
             transition: all 0.2s;
             position: relative;
@@ -359,14 +363,14 @@
 
         /* ★チェック済み（完了）のデザイン */
         .order-item.checked {
-            background: #e0e0e0;     /* 背景をグレーに */
-            border-left-color: #95a5a6; /* 左の線をグレーに */
-            opacity: 0.7;             /* 全体を少し薄く */
+            background: rgba(255, 255, 255, 0.02);
+            border-left-color: rgba(255, 255, 255, 0.12);
+            opacity: 0.45;
         }
-        
+
         .order-item.checked .room-name-left {
             text-decoration: line-through; /* 文字に取り消し線 */
-            color: #7f8c8d;
+            color: rgba(255, 255, 255, 0.35);
         }
 
         /* チェックマーク（普段は隠れている） */
@@ -397,7 +401,7 @@
         .room-name-left {
             font-size: 18px;
             font-weight: bold;
-            color: #2c3e50;
+            color: #ffffff;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -406,7 +410,7 @@
 
         /* ★人数のデザイン */
         .people-count {
-            background: #34495e;
+            background: rgba(255, 255, 255, 0.15);
             color: white;
             font-size: 14px;
             padding: 2px 8px;
@@ -414,16 +418,16 @@
             margin-left: 5px;
             vertical-align: middle;
         }
-        
+
         /* チェックされたら人数もグレーに */
         .order-item.checked .people-count {
-            background: #95a5a6;
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .order-item.new-order {
-            background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
+            background: rgba(255, 152, 0, 0.08);
             border-left-color: #ff9800;
-            box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.12);
+            box-shadow: 0 0 0 1px rgba(255, 152, 0, 0.2);
             animation: newOrderPulse 1.5s ease-in-out infinite;
         }
 
@@ -488,9 +492,9 @@
         }
 
         .staff-tag {
-            background: #d4edda;
-            color: #155724;
-            border: 2px solid #28a745;
+            background: rgba(40, 167, 69, 0.15);
+            color: #5acd7e;
+            border: 2px solid rgba(40, 167, 69, 0.4);
         }
 
         .empty-state {
@@ -563,8 +567,8 @@
         }
 
         .loading-spinner {
-            border: 6px solid #e0e0e0;
-            border-top: 6px solid #3498db;
+            border: 6px solid rgba(255, 255, 255, 0.1);
+            border-top: 6px solid #388bfd;
             border-radius: 50%;
             width: 60px;
             height: 60px;
