@@ -484,11 +484,24 @@
             font-size: 16px;
         }
 
-        .w-tag {
-            background: #ffa94d;
+        .w-banner {
+            background: #c0392b;
             color: #fff;
-            border: 3px solid #ff8c00;
-            font-size: 16px;
+            border-top: 2px solid #922b21;
+            font-size: 17px;
+            font-weight: bold;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 0 0 8px 8px;
+            letter-spacing: 0.03em;
+        }
+
+        .w-banner .w-count {
+            font-size: 22px;
+            font-weight: 900;
+            line-height: 1;
         }
 
         .staff-tag {
@@ -1273,11 +1286,11 @@
                     if (order.refillCount > 0) {
                         html += `<span class="detail-tag" style="background:#e3f2fd; color:#0d47a1; border:3px solid #1976d2;">🍚 おかわり ${order.refillCount}名</span>`;
                     }
-                    if (order.wCount > 0) html += `<span class="detail-tag w-tag">🔥 W×${order.wCount}</span>`;
                     if (order.allergy) html += `<span class="detail-tag allergy-tag">${order.allergy}NG</span>`;
-                    html += `</div>`; 
-                    html += `</div>`; 
-                    html += '</div>'; 
+                    html += `</div>`;
+                    html += `</div>`;
+                    if (order.wCount > 0) html += `<div class="w-banner">🥩 ウェルダン: <span class="w-count">${order.wCount}名</span></div>`;
+                    html += '</div>';
                 });
                 
                 html += `
