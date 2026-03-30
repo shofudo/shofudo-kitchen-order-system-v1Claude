@@ -699,24 +699,50 @@
             gap: 10px;
         }
 
-        .undo-btn {
+        .bottom-action-bar {
             position: fixed;
-            bottom: 15px;
-            right: 15px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #8b7355 0%, #a08968 100%);
-            color: white;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
             z-index: 50;
+            background: #3a3228;
+            border-top: 2px solid #5a4a3a;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
         }
 
-        .undo-btn:active {
-            transform: scale(0.95);
+        .action-bar-btn {
+            flex: 1;
+            padding: 14px 8px;
+            border: none;
+            border-right: 1px solid #5a4a3a;
+            background: #3a3228;
+            color: #d4c4a8;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.15s;
+        }
+
+        .action-bar-btn:last-child {
+            border-right: none;
+        }
+
+        .action-bar-btn.mode-active {
+            background: #8b7355;
+            color: white;
+        }
+
+        .action-bar-btn-danger {
+            color: #ff9999;
+        }
+
+        .action-bar-btn:active {
+            opacity: 0.75;
+        }
+
+        #order-content {
+            padding-bottom: 65px;
         }
 
         @media (max-width: 768px) {
@@ -808,7 +834,11 @@
             <div id="order-content">
                 <!-- 営業内容が動的に生成される -->
             </div>
-            <button class="undo-btn" onclick="undoLastAction()">↶</button>
+            <div class="bottom-action-bar">
+                <button class="action-bar-btn" id="btn-redo" onclick="toggleMode('redo')">↩ やり直し</button>
+                <button class="action-bar-btn" id="btn-partial-reset" onclick="toggleMode('partial-reset')">✂ 部分リセット</button>
+                <button class="action-bar-btn action-bar-btn-danger" onclick="resetOrderState()">⚠ 全体初期化</button>
+            </div>
         </div>
     </div>
 
@@ -915,6 +945,8 @@
 
         let orderState = {};
         let lastAction = null;
+        let actionMode = null; // 'redo' | 'partial-reset' | null
+        let courseHistory = {}; // key: 'roomName:courseName' → 直前の状態
         let hasLegacyCourseMigration = false;
 
         const EATING_SPEEDS = ['VF', 'F', 'LF', 'N', 'LS', 'S', 'VS'];
@@ -1455,13 +1487,6 @@
                 content.appendChild(timeDiv);
             });
 
-            // 初期化ボタン
-            const resetBtn = document.createElement('button');
-            resetBtn.className = 'btn btn-secondary';
-            resetBtn.textContent = 'Order初期化';
-            resetBtn.onclick = resetOrderState;
-            resetBtn.style.marginTop = '20px';
-            content.appendChild(resetBtn);
         }
 
         function createRoomCard(room) {
@@ -1654,14 +1679,50 @@
             }
             if (!room) return;
 
+            // ── やり直しモード ──
+            if (actionMode === 'redo') {
+                const key = `${roomName}:${courseName}`;
+                const cur = orderState[roomName].courses[courseName];
+                if (courseHistory[key]) {
+                    orderState[roomName].courses[courseName] = courseHistory[key];
+                    delete courseHistory[key];
+                } else {
+                    // 履歴がない場合は「未」に戻す
+                    orderState[roomName].courses[courseName] = {
+                        status: 'none', time: null, pressedTime: null,
+                        staff: null, wCount: 0,
+                        allergy: cur.allergy || '',
+                        ...(cur.displayName ? { displayName: cur.displayName } : {})
+                    };
+                }
+                actionMode = null;
+                updateActionBarUI();
+                saveOrderState();
+                renderOrderPage();
+                return;
+            }
+
+            // ── 部分リセットモード ──
+            if (actionMode === 'partial-reset') {
+                const cur = orderState[roomName].courses[courseName];
+                orderState[roomName].courses[courseName] = {
+                    status: 'none', time: null, pressedTime: null,
+                    staff: null, wCount: 0,
+                    allergy: cur.allergy || '',
+                    ...(cur.displayName ? { displayName: cur.displayName } : {})
+                };
+                actionMode = null;
+                updateActionBarUI();
+                saveOrderState();
+                renderOrderPage();
+                return;
+            }
+
+            // ── 通常モード ──
             const state = orderState[roomName].courses[courseName];
-            
-            // 最後の操作を保存
-            lastAction = {
-                room: roomName,
-                course: courseName,
-                previousState: JSON.parse(JSON.stringify(state))
-            };
+
+            // 操作前の状態を履歴に保存
+            courseHistory[`${roomName}:${courseName}`] = JSON.parse(JSON.stringify(state));
 
             // ★追加機能：ご飯・鮎ソバのおかわりロジック
 
@@ -1863,18 +1924,17 @@ if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].inclu
             document.getElementById('modal').classList.remove('active');
         }
 
-        // Undo
-        function undoLastAction() {
-            if (!lastAction) {
-                alert('元に戻す操作がありません');
-                return;
-            }
+        // ボトムバーのモード切り替え
+        function toggleMode(mode) {
+            actionMode = (actionMode === mode) ? null : mode;
+            updateActionBarUI();
+        }
 
-            orderState[lastAction.room].courses[lastAction.course] = lastAction.previousState;
-            lastAction = null;
-
-            saveOrderState();
-            renderOrderPage();
+        function updateActionBarUI() {
+            const redoBtn = document.getElementById('btn-redo');
+            const partialBtn = document.getElementById('btn-partial-reset');
+            if (redoBtn) redoBtn.classList.toggle('mode-active', actionMode === 'redo');
+            if (partialBtn) partialBtn.classList.toggle('mode-active', actionMode === 'partial-reset');
         }
 
         // Order初期化
