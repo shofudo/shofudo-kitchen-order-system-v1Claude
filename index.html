@@ -1746,6 +1746,7 @@ if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].inclu
                     showTimeModal(roomName, courseName);
                 } else if (state.status === 'wait') {
                     state.status = 'serve';
+                    state.time = getCurrentTime();
                     showStaffModal(roomName, courseName);
                 } else {
                     state.status = 'none';
@@ -1753,7 +1754,7 @@ if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].inclu
                     state.pressedTime = null;
                     state.staff = null;
                 }
-            } 
+            }
             // 肉・メイン系: 未 → 待 → 調理開始(肉/焼) → 注 → 提 → 未
             else if (['ステーキ', '煮物', '連泊ｽﾃｰｷ', ].includes(courseName)) {
                 if (state.status === 'none') {
@@ -1765,9 +1766,11 @@ if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].inclu
                     showWCountModal(roomName, courseName);
                 } else if (state.status === 'meat') {
                     state.status = 'order';
+                    state.time = getCurrentTime();
                     state.orderTimestamp = Date.now();
                 } else if (state.status === 'order') {
                     state.status = 'serve';
+                    state.time = getCurrentTime();
                     showStaffModal(roomName, courseName);
                 } else {
                     state.status = 'none';
@@ -1785,9 +1788,11 @@ if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].inclu
                     showTimeModal(roomName, courseName);
                 } else if (state.status === 'wait') {
                     state.status = 'order';
+                    state.time = getCurrentTime();
                     state.orderTimestamp = Date.now();
                 } else if (state.status === 'order') {
                     state.status = 'serve';
+                    state.time = getCurrentTime();
                     showStaffModal(roomName, courseName);
                 } else {
                     state.status = 'none';
