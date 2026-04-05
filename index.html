@@ -704,11 +704,48 @@
             bottom: 0;
             left: 0;
             right: 0;
-            display: flex;
             z-index: 50;
             background: #3a3228;
-            border-top: 2px solid #5a4a3a;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+        }
+
+        .action-bar-handle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 6px 8px;
+            border-top: 2px solid #5a4a3a;
+            cursor: pointer;
+            color: #a08060;
+            font-size: 12px;
+            user-select: none;
+            transition: background 0.15s;
+        }
+
+        .action-bar-handle:hover {
+            background: #4a3f32;
+        }
+
+        .action-bar-handle .handle-icon {
+            font-size: 16px;
+            line-height: 1;
+            transition: transform 0.25s;
+        }
+
+        .bottom-action-bar.open .handle-icon {
+            transform: rotate(180deg);
+        }
+
+        .action-bar-buttons {
+            display: flex;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.25s ease;
+        }
+
+        .bottom-action-bar.open .action-bar-buttons {
+            max-height: 60px;
         }
 
         .action-bar-btn {
@@ -716,6 +753,7 @@
             padding: 14px 8px;
             border: none;
             border-right: 1px solid #5a4a3a;
+            border-top: 1px solid #5a4a3a;
             background: #3a3228;
             color: #d4c4a8;
             font-size: 14px;
@@ -742,7 +780,7 @@
         }
 
         #order-content {
-            padding-bottom: 65px;
+            padding-bottom: 40px;
         }
 
         @media (max-width: 768px) {
@@ -834,10 +872,16 @@
             <div id="order-content">
                 <!-- 営業内容が動的に生成される -->
             </div>
-            <div class="bottom-action-bar">
-                <button class="action-bar-btn" id="btn-redo" onclick="toggleMode('redo')">↩ やり直し</button>
-                <button class="action-bar-btn" id="btn-partial-reset" onclick="toggleMode('partial-reset')">✂ 部分リセット</button>
-                <button class="action-bar-btn action-bar-btn-danger" onclick="resetOrderState()">⚠ 全体初期化</button>
+            <div class="bottom-action-bar" id="bottom-action-bar">
+                <div class="action-bar-handle" onclick="toggleActionBar()">
+                    <span class="handle-icon">▲</span>
+                    <span id="action-bar-handle-label">操作</span>
+                </div>
+                <div class="action-bar-buttons">
+                    <button class="action-bar-btn" id="btn-redo" onclick="toggleMode('redo')">↩ やり直し</button>
+                    <button class="action-bar-btn" id="btn-partial-reset" onclick="toggleMode('partial-reset')">✂ 部分リセット</button>
+                    <button class="action-bar-btn action-bar-btn-danger" onclick="resetOrderState()">⚠ 全体初期化</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1929,9 +1973,20 @@ if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].inclu
             document.getElementById('modal').classList.remove('active');
         }
 
+        // ボトムバー開閉
+        function toggleActionBar() {
+            const bar = document.getElementById('bottom-action-bar');
+            if (bar) bar.classList.toggle('open');
+        }
+
         // ボトムバーのモード切り替え
         function toggleMode(mode) {
             actionMode = (actionMode === mode) ? null : mode;
+            // モードがアクティブなら展開を維持
+            if (actionMode) {
+                const bar = document.getElementById('bottom-action-bar');
+                if (bar) bar.classList.add('open');
+            }
             updateActionBarUI();
         }
 
