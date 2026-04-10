@@ -648,6 +648,13 @@
             color: #e6edf3;
         }
 
+        .single-order-sub {
+            font-size: 12px;
+            font-weight: normal;
+            color: rgba(255,255,255,0.5);
+            margin-top: 2px;
+        }
+
         .single-order-servings {
             font-size: 18px;
             font-weight: bold;
@@ -1096,7 +1103,7 @@
             });
             previousSingleOrderIds = currentIds;
             updateSingleOrdersDisplay(data);
-            if (hasNew) startNotificationLoop();
+            if (hasNew) playNotificationSound();
         });
 
         function checkForNewOrders(orderData, isInitialSnapshot) {
@@ -1406,6 +1413,11 @@
             content.innerHTML = html;
         }
 
+        const SINGLE_DISH_LABELS = {
+            'カラスミ': { hiragana: 'からすみ', nepali: 'कारासुमि' },
+            '鮎醤油そば': { hiragana: 'あゆしょうゆそば', nepali: 'आयु शोयु सोबा' },
+        };
+
         function updateSingleOrdersDisplay(data) {
             const container = document.getElementById('single-orders-container');
             if (!container) return;
@@ -1424,10 +1436,14 @@
                 const date = new Date(order.timestamp);
                 const timeStr = `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
                 const elapsedInfo = getElapsedInfo(order.timestamp);
+                const labels = SINGLE_DISH_LABELS[order.dishName];
+                const subLabel = labels
+                    ? `<div class="single-order-sub">${labels.hiragana}　${labels.nepali}</div>`
+                    : '';
                 html += `
                     <div class="single-order-card ${elapsedInfo.className}">
                         <div class="single-order-info">
-                            <div class="single-order-name">${order.dishName}</div>
+                            <div class="single-order-name">${order.dishName}${subLabel}</div>
                             <div class="single-order-servings">${order.servings}人前</div>
                             <div class="single-order-time">🕒 ${timeStr}${elapsedInfo.elapsedText ? ` · ${elapsedInfo.elapsedText}` : ''}</div>
                         </div>
