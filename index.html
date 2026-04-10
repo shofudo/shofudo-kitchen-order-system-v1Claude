@@ -739,13 +739,14 @@
 
         .action-bar-buttons {
             display: flex;
+            flex-wrap: wrap;
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.25s ease;
         }
 
         .bottom-action-bar.open .action-bar-buttons {
-            max-height: 60px;
+            max-height: 130px;
         }
 
         .action-bar-btn {
@@ -777,6 +778,135 @@
 
         .action-bar-btn:active {
             opacity: 0.75;
+        }
+
+        .action-bar-btn-single {
+            flex: 0 0 100%;
+            background: #1e3a5c;
+            color: #88ccff;
+            border-right: none;
+            border-top: 2px solid #2a4f7a;
+        }
+
+        .action-bar-btn-single:active {
+            opacity: 0.75;
+        }
+
+        /* 単品オーダーモーダル */
+        .single-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.55);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .single-modal.active {
+            display: flex;
+        }
+
+        .single-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 28px 24px;
+            max-width: 90%;
+            width: 360px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .single-modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e3a5c;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .single-dish-btn {
+            width: 100%;
+            padding: 18px;
+            margin-bottom: 10px;
+            border: 2px solid #c8d8e8;
+            border-radius: 12px;
+            background: #f0f6fc;
+            color: #1e3a5c;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+
+        .single-dish-btn.selected {
+            border-color: #2980b9;
+            background: #d6eaf8;
+            color: #1a5276;
+        }
+
+        .single-servings-label {
+            color: #888;
+            font-size: 14px;
+            margin: 14px 0 8px;
+        }
+
+        .servings-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .serving-btn {
+            padding: 14px 8px;
+            border: 2px solid #c8d8e8;
+            border-radius: 10px;
+            background: #f0f6fc;
+            color: #1e3a5c;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+
+        .serving-btn.selected {
+            border-color: #2980b9;
+            background: #d6eaf8;
+            color: #1a5276;
+        }
+
+        .single-submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #2980b9, #3498db);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .single-submit-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .single-cancel-btn {
+            width: 100%;
+            padding: 14px;
+            background: #e0d8cc;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            font-family: inherit;
         }
 
         #order-content {
@@ -881,6 +1011,7 @@
                     <button class="action-bar-btn" id="btn-redo" onclick="toggleMode('redo')">↩ やり直し</button>
                     <button class="action-bar-btn" id="btn-partial-reset" onclick="toggleMode('partial-reset')">✂ 部分リセット</button>
                     <button class="action-bar-btn action-bar-btn-danger" onclick="resetOrderState()">⚠ 全体初期化</button>
+                    <button class="action-bar-btn action-bar-btn-single" onclick="openSingleOrderModal()">🍽 単品オーダー</button>
                 </div>
             </div>
         </div>
@@ -892,6 +1023,26 @@
             <div class="modal-title" id="modal-title"></div>
             <div id="modal-body"></div>
             <button class="modal-close" onclick="closeModal()">閉じる</button>
+        </div>
+    </div>
+
+    <!-- 単品オーダーモーダル -->
+    <div id="single-order-modal" class="single-modal">
+        <div class="single-modal-content">
+            <div class="single-modal-title">🍽 単品オーダー</div>
+            <button class="single-dish-btn" id="single-dish-btn-0" onclick="selectSingleDish(0)">カラスミ</button>
+            <button class="single-dish-btn" id="single-dish-btn-1" onclick="selectSingleDish(1)">鮎醤油そば</button>
+            <div class="single-servings-label">何人前？</div>
+            <div class="servings-grid">
+                <button class="serving-btn" data-count="1" onclick="selectServings(1)">1人前</button>
+                <button class="serving-btn" data-count="2" onclick="selectServings(2)">2人前</button>
+                <button class="serving-btn" data-count="3" onclick="selectServings(3)">3人前</button>
+                <button class="serving-btn" data-count="4" onclick="selectServings(4)">4人前</button>
+                <button class="serving-btn" data-count="5" onclick="selectServings(5)">5人前</button>
+                <button class="serving-btn" data-count="6" onclick="selectServings(6)">6人前</button>
+            </div>
+            <button class="single-submit-btn" id="single-submit-btn" onclick="submitSingleOrder()" disabled>注文する</button>
+            <button class="single-cancel-btn" onclick="closeSingleOrderModal()">キャンセル</button>
         </div>
     </div>
 
@@ -992,6 +1143,11 @@
         let actionMode = null; // 'redo' | 'partial-reset' | null
         let courseHistory = {}; // key: 'roomName:courseName' → 直前の状態
         let hasLegacyCourseMigration = false;
+
+        // 単品オーダー
+        const SINGLE_DISHES = ['カラスミ', '鮎醤油そば'];
+        let selectedSingleDish = null;
+        let selectedServings = null;
 
         const EATING_SPEEDS = ['VF', 'F', 'LF', 'N', 'LS', 'S', 'VS'];
 
@@ -1997,6 +2153,58 @@ if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].inclu
             if (partialBtn) partialBtn.classList.toggle('mode-active', actionMode === 'partial-reset');
         }
 
+        // 単品オーダーモーダル
+        function openSingleOrderModal() {
+            selectedSingleDish = null;
+            selectedServings = null;
+            document.querySelectorAll('.single-dish-btn').forEach(b => b.classList.remove('selected'));
+            document.querySelectorAll('.serving-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('single-submit-btn').disabled = true;
+            document.getElementById('single-order-modal').classList.add('active');
+        }
+
+        function closeSingleOrderModal() {
+            document.getElementById('single-order-modal').classList.remove('active');
+        }
+
+        function selectSingleDish(index) {
+            selectedSingleDish = index;
+            document.querySelectorAll('.single-dish-btn').forEach((b, i) => {
+                b.classList.toggle('selected', i === index);
+            });
+            updateSingleSubmitBtn();
+        }
+
+        function selectServings(count) {
+            selectedServings = count;
+            document.querySelectorAll('.serving-btn').forEach(b => {
+                b.classList.toggle('selected', parseInt(b.dataset.count) === count);
+            });
+            updateSingleSubmitBtn();
+        }
+
+        function updateSingleSubmitBtn() {
+            document.getElementById('single-submit-btn').disabled =
+                (selectedSingleDish === null || selectedServings === null);
+        }
+
+        function submitSingleOrder() {
+            if (selectedSingleDish === null || selectedServings === null) return;
+            const orderData = {
+                dishName: SINGLE_DISHES[selectedSingleDish],
+                servings: selectedServings,
+                timestamp: Date.now()
+            };
+            if (window.firebaseDB && window.firebaseRef && window.firebasePush) {
+                const singleOrdersRef = window.firebaseRef(window.firebaseDB, 'singleOrders');
+                window.firebasePush(singleOrdersRef, orderData).catch(err => {
+                    console.error('単品オーダー送信エラー:', err);
+                    alert('送信に失敗しました');
+                });
+            }
+            closeSingleOrderModal();
+        }
+
         // Order初期化
         function resetOrderState() {
             if (!confirm('Orderページをリセットしますか？')) return;
@@ -2335,7 +2543,7 @@ if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].inclu
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
         // Firebase設定
         const firebaseConfig = {
@@ -2356,6 +2564,7 @@ if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].inclu
         window.firebaseDB = database;
         window.firebaseRef = ref;
         window.firebaseSet = set;
+        window.firebasePush = push;
         window.firebaseOnValue = onValue;
     </script>
     

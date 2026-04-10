@@ -592,6 +592,90 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* 単品オーダーセクション */
+        .single-orders-section {
+            margin-bottom: 10px;
+        }
+
+        .single-orders-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #88ccff;
+            padding: 6px 12px;
+            margin-bottom: 6px;
+            background: #0d2137;
+            border-radius: 8px;
+            border-left: 4px solid #2980b9;
+        }
+
+        .single-orders-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .single-order-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            background: #0d2137;
+            border: 2px solid #2a4f7a;
+            border-radius: 12px;
+            padding: 14px 16px;
+            min-width: 240px;
+            flex: 1;
+        }
+
+        .single-order-card.elapsed-warning {
+            border-color: #f39c12;
+        }
+
+        .single-order-card.elapsed-urgent {
+            border-color: #e74c3c;
+        }
+
+        .single-order-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .single-order-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #e6edf3;
+        }
+
+        .single-order-servings {
+            font-size: 18px;
+            font-weight: bold;
+            color: #88ccff;
+        }
+
+        .single-order-time {
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .serve-btn {
+            padding: 14px 22px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 3px 10px rgba(46, 204, 113, 0.35);
+            transition: opacity 0.15s;
+        }
+
+        .serve-btn:active {
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
@@ -630,6 +714,8 @@
         </button>
     </div>
 
+    <div id="single-orders-container"></div>
+
     <div id="content">
         <div class="loading">
             <div class="loading-spinner"></div>
@@ -638,7 +724,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+        import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
         const COURSE_FURIGANA = {
             "吸物": "すいもの",
@@ -686,6 +772,7 @@
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
         const ordersRef = ref(database, 'orders');
+        const singleOrdersRef = ref(database, 'singleOrders');
         const NOTIFICATION_SETTINGS_KEY = 'kitchenNotificationSettings';
         const UNACKNOWLEDGED_ORDERS_KEY = 'kitchenUnacknowledgedOrders';
         const NOTIFICATION_SOUND_PATH = './assets/notification-voice.mp3';
@@ -695,6 +782,7 @@
         let previousOrderStatuses = {};
         let initialDataLoaded = false;
         let hasProcessedInitialSnapshot = false;
+        let previousSingleOrderIds = new Set();
         
         // ★【ノート機能】チェックした項目を記憶しておく箱
         // ブラウザを閉じても覚えているように localStorage を使います
@@ -994,6 +1082,21 @@
             } else {
                 showError('接続エラー', `Firebaseへの接続に失敗しました。エラーコード: ${error.code || '不明'}`);
             }
+        });
+
+        onValue(singleOrdersRef, (snapshot) => {
+            const data = snapshot.val();
+            const currentIds = data ? new Set(Object.keys(data)) : new Set();
+            // 新規単品オーダーの通知
+            let hasNew = false;
+            currentIds.forEach(id => {
+                if (!previousSingleOrderIds.has(id) && hasProcessedInitialSnapshot) {
+                    hasNew = true;
+                }
+            });
+            previousSingleOrderIds = currentIds;
+            updateSingleOrdersDisplay(data);
+            if (hasNew) startNotificationLoop();
         });
 
         function checkForNewOrders(orderData, isInitialSnapshot) {
@@ -1302,6 +1405,44 @@
             html += '</div>';
             content.innerHTML = html;
         }
+
+        function updateSingleOrdersDisplay(data) {
+            const container = document.getElementById('single-orders-container');
+            if (!container) return;
+            if (!data || Object.keys(data).length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            const orders = Object.entries(data)
+                .map(([id, order]) => ({ id, ...order }))
+                .sort((a, b) => a.timestamp - b.timestamp);
+
+            let html = '<div class="single-orders-section">';
+            html += '<div class="single-orders-title">🍽 単品オーダー</div>';
+            html += '<div class="single-orders-list">';
+            orders.forEach(order => {
+                const date = new Date(order.timestamp);
+                const timeStr = `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+                const elapsedInfo = getElapsedInfo(order.timestamp);
+                html += `
+                    <div class="single-order-card ${elapsedInfo.className}">
+                        <div class="single-order-info">
+                            <div class="single-order-name">${order.dishName}</div>
+                            <div class="single-order-servings">${order.servings}人前</div>
+                            <div class="single-order-time">🕒 ${timeStr}${elapsedInfo.elapsedText ? ` · ${elapsedInfo.elapsedText}` : ''}</div>
+                        </div>
+                        <button class="serve-btn" onclick="serveSingleOrder('${order.id}')">提供</button>
+                    </div>
+                `;
+            });
+            html += '</div></div>';
+            container.innerHTML = html;
+        }
+
+        window.serveSingleOrder = function(orderId) {
+            const orderRef = ref(database, `singleOrders/${orderId}`);
+            remove(orderRef).catch(err => console.error('提供エラー:', err));
+        };
 
         function showError(title = '接続エラー', message = 'Firebaseへの接続に失敗しました') {
             const content = document.getElementById('content');
