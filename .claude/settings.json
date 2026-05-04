@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find /c/Users/saria/Documents/GitHub/shofudo-kitchen-order-system-v1Claude -type f \\\\\\(-name *.tsx -o -name *.ts \\\\\\))"
+      "Bash(find /c/Users/saria/Documents/GitHub/shofudo-kitchen-order-system-v1Claude -type f \\\\\\(-name *.tsx -o -name *.ts \\\\\\))",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\saria\\\\Documents\\\\GitHub\\\\shofudo-kitchen-order-system-v1Claude\" -Recurse -Include *.js, *.html, *.json)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)"
     ]
   }
 }

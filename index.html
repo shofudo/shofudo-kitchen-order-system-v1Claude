@@ -1303,8 +1303,10 @@
                 customRooms: [],
                 customStaff: []
             };
-            
+
             localStorage.setItem('orderSettings', JSON.stringify(settings));
+            initOrderState(false); // orderStateも一緒にリセット
+            saveOrderState();
             renderIndexPage();
             alert('初期化しました！');
         }
@@ -1342,6 +1344,13 @@
                     if (keepData && oldRoomData && oldRoomData.courses && oldRoomData.courses[course]) {
                         orderState[room.name].courses[course] = oldRoomData.courses[course];
                         orderState[room.name].courses[course].allergy = allergy; // アレルギーだけ最新に更新
+                        // customCourseNamesの現在の状態に合わせてdisplayNameを同期する
+                        const customName = room.customCourseNames && room.customCourseNames[course];
+                        if (customName && customName !== course) {
+                            orderState[room.name].courses[course].displayName = customName;
+                        } else {
+                            delete orderState[room.name].courses[course].displayName;
+                        }
                     } else {
                         // 前のデータがないなら「未」で作る
                         orderState[room.name].courses[course] = {
