@@ -699,6 +699,64 @@
             gap: 10px;
         }
 
+        /* ケーキ・プレートアラート */
+        .cake-plate-alert {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.65);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .cake-plate-alert.active {
+            display: flex;
+        }
+        .cake-plate-alert-content {
+            background: white;
+            border-radius: 20px;
+            padding: 36px 40px;
+            text-align: center;
+            max-width: 85%;
+            border: 5px solid #e91e8c;
+            animation: cake-alert-pop 0.25s ease-out;
+        }
+        @keyframes cake-alert-pop {
+            from { transform: scale(0.8); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+        .cake-plate-alert-room {
+            font-size: 18px;
+            color: #888;
+            margin-bottom: 6px;
+        }
+        .cake-plate-alert-icon {
+            font-size: 56px;
+            margin-bottom: 12px;
+        }
+        .cake-plate-alert-message {
+            font-size: 32px;
+            font-weight: bold;
+            color: #c2185b;
+            line-height: 1.4;
+            margin-bottom: 28px;
+        }
+        .cake-plate-alert-close {
+            padding: 16px 48px;
+            background: #e91e8c;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        .cake-plate-alert-close:active {
+            background: #c2185b;
+        }
+
         .bottom-action-bar {
             position: fixed;
             bottom: 0;
@@ -1023,6 +1081,16 @@
             <div class="modal-title" id="modal-title"></div>
             <div id="modal-body"></div>
             <button class="modal-close" onclick="closeModal()">閉じる</button>
+        </div>
+    </div>
+
+    <!-- ケーキ・プレートアラート -->
+    <div id="cake-plate-alert" class="cake-plate-alert">
+        <div class="cake-plate-alert-content">
+            <div class="cake-plate-alert-room" id="cake-plate-alert-room"></div>
+            <div class="cake-plate-alert-icon" id="cake-plate-alert-icon"></div>
+            <div class="cake-plate-alert-message" id="cake-plate-alert-message"></div>
+            <button class="cake-plate-alert-close" onclick="closeCakePlateAlert()">確認</button>
         </div>
     </div>
 
@@ -1999,6 +2067,9 @@ if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].inclu
                     state.status = 'order';
                     state.time = getCurrentTime();
                     state.orderTimestamp = Date.now();
+                    if (courseName === '甘味' && (room.hasCake || room.hasPlate)) {
+                        showCakePlateAlert(roomName, room.hasCake, room.hasPlate);
+                    }
                 } else if (state.status === 'order') {
                     state.status = 'serve';
                     state.time = getCurrentTime();
@@ -2136,6 +2207,29 @@ if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].inclu
         // モーダル閉じる
         function closeModal() {
             document.getElementById('modal').classList.remove('active');
+        }
+
+        // ケーキ・プレートアラート
+        function showCakePlateAlert(roomName, hasCake, hasPlate) {
+            const alert = document.getElementById('cake-plate-alert');
+            const items = [];
+            if (hasCake)  items.push('ケーキ');
+            if (hasPlate) items.push('プレート');
+
+            const icons = [];
+            if (hasCake)  icons.push('🎂');
+            if (hasPlate) icons.push('🍽️');
+
+            document.getElementById('cake-plate-alert-room').textContent = roomName;
+            document.getElementById('cake-plate-alert-icon').textContent = icons.join(' ');
+            document.getElementById('cake-plate-alert-message').innerHTML =
+                items.join('・') + 'が<br>行きます！';
+
+            alert.classList.add('active');
+        }
+
+        function closeCakePlateAlert() {
+            document.getElementById('cake-plate-alert').classList.remove('active');
         }
 
         // ボトムバー開閉
