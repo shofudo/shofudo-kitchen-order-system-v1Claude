@@ -1191,7 +1191,18 @@
             else if (month === 1 && date <= 3) {
                 return SHOGATSU_PLANS;
             }
-            
+
+            // 6月1日 〜 8月31日: リピーター献立のみ夏メニューに変更
+            if (month >= 6 && month <= 8) {
+                return {
+                    ...NORMAL_PLANS,
+                    'リピーター献立': {
+                        courses: ['リピ吸物', 'リピ合肴', '鮎塩焼き', '蒸し物', '煮物', 'リピご飯', '甘味'],
+                        color: '#E67E22'
+                    }
+                };
+            }
+
             // それ以外（通常）
             return NORMAL_PLANS;
         }
