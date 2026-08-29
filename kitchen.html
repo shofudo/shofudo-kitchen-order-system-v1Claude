@@ -86,6 +86,69 @@
         }
         .sound-test-btn.hidden { display: none; }
 
+        .voice-alert-popup {
+            position: fixed;
+            inset: 0;
+            z-index: 5000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(0, 0, 0, 0.58);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.18s ease, visibility 0.18s ease;
+        }
+
+        .voice-alert-popup.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .voice-alert-card {
+            width: min(680px, 92vw);
+            padding: 34px 28px;
+            border: 4px solid #73daca;
+            border-radius: 24px;
+            background: linear-gradient(145deg, #172d2b, #10201f);
+            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55), 0 0 32px rgba(115, 218, 202, 0.22);
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.18s ease;
+        }
+
+        .voice-alert-popup.visible .voice-alert-card {
+            transform: scale(1);
+        }
+
+        .voice-alert-popup.mistake .voice-alert-card {
+            border-color: #ff9b63;
+            background: linear-gradient(145deg, #3a2119, #241510);
+            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55), 0 0 32px rgba(255, 155, 99, 0.25);
+        }
+
+        .voice-alert-icon {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 50px;
+        }
+
+        .voice-alert-label {
+            margin-bottom: 8px;
+            color: #9aa7b2;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+        }
+
+        .voice-alert-message {
+            color: #ffffff;
+            font-size: clamp(28px, 5vw, 48px);
+            font-weight: 800;
+            line-height: 1.35;
+        }
+
         .notification-banner {
             display: flex;
             align-items: center;
@@ -686,6 +749,14 @@
     </style>
 </head>
 <body>
+    <div class="voice-alert-popup" id="voice-alert-popup" role="alert" aria-live="assertive">
+        <div class="voice-alert-card">
+            <span class="voice-alert-icon" id="voice-alert-icon">🔊</span>
+            <div class="voice-alert-label">ホールからのお知らせ</div>
+            <div class="voice-alert-message" id="voice-alert-message"></div>
+        </div>
+    </div>
+
     <div class="header">
         <h1>🍳 キッチンディスプレイ</h1>
         <div class="last-update" id="last-update">接続中...</div>
@@ -798,9 +869,13 @@
         const database = getDatabase(app);
         const ordersRef = ref(database, 'orders');
         const singleOrdersRef = ref(database, 'singleOrders');
+        const kitchenVoiceAlertRef = ref(database, 'kitchenVoiceAlert');
         const NOTIFICATION_SETTINGS_KEY = 'kitchenNotificationSettings';
         const UNACKNOWLEDGED_ORDERS_KEY = 'kitchenUnacknowledgedOrders';
+        const LAST_VOICE_ALERT_KEY = 'kitchenLastVoiceAlertId';
         const NOTIFICATION_SOUND_PATH = './assets/notification-voice.mp3';
+        const KASAIMORI_VOICE_PATH = './assets/kitchen-call-kasaimori.mp3';
+        const MISTAKE_VOICE_PATH = './assets/kitchen-call-mistake.mp3';
         const NOTIFICATION_SOUND_COOLDOWN_MS = 5000;
         const NOTIFICATION_REPEAT_INTERVAL_MS = 4000;
 
@@ -808,6 +883,9 @@
         let initialDataLoaded = false;
         let hasProcessedInitialSnapshot = false;
         let previousSingleOrderIds = new Set();
+        let hasLoadedInitialVoiceAlert = false;
+        let lastVoiceAlertId = localStorage.getItem(LAST_VOICE_ALERT_KEY);
+        let voiceAlertTimer = null;
         
         // ★【ノート機能】チェックした項目を記憶しておく箱
         // ブラウザを閉じても覚えているように localStorage を使います
@@ -817,6 +895,8 @@
         let unacknowledgedOrders = JSON.parse(localStorage.getItem(UNACKNOWLEDGED_ORDERS_KEY)) || {};
         let notificationRepeatTimer = null;
         let notificationAudio = null;
+        let kasaimoriVoiceAudio = null;
+        let mistakeVoiceAudio = null;
         let lastNotificationSoundAt = 0;
 
         const loadingTimeout = setTimeout(() => {
@@ -855,6 +935,22 @@
                 notificationAudio.preload = 'auto';
             }
             return notificationAudio;
+        }
+
+        function getKasaimoriVoiceAudio() {
+            if (!kasaimoriVoiceAudio) {
+                kasaimoriVoiceAudio = new Audio(KASAIMORI_VOICE_PATH);
+                kasaimoriVoiceAudio.preload = 'auto';
+            }
+            return kasaimoriVoiceAudio;
+        }
+
+        function getMistakeVoiceAudio() {
+            if (!mistakeVoiceAudio) {
+                mistakeVoiceAudio = new Audio(MISTAKE_VOICE_PATH);
+                mistakeVoiceAudio.preload = 'auto';
+            }
+            return mistakeVoiceAudio;
         }
 
         function stopNotificationAudio() {
@@ -994,6 +1090,8 @@
         window.addEventListener('load', () => {
             initAudioContext();
             getNotificationAudio();
+            getKasaimoriVoiceAudio();
+            getMistakeVoiceAudio();
             updateNotificationBanner();
         });
         document.addEventListener('click', initAudioContext, { once: true });
@@ -1123,6 +1221,86 @@
             updateSingleOrdersDisplay(data);
             if (hasNew) playNotificationSound();
         });
+
+        onValue(kitchenVoiceAlertRef, (snapshot) => {
+            const alertData = snapshot.val();
+
+            // 起動中に届いた通知は拾いつつ、DBに残っている古い通知は再生しない
+            if (!hasLoadedInitialVoiceAlert) {
+                hasLoadedInitialVoiceAlert = true;
+                if (!alertData || !alertData.id || alertData.id === lastVoiceAlertId) return;
+                if (!alertData.timestamp || Date.now() - alertData.timestamp > 15000) {
+                    lastVoiceAlertId = alertData.id;
+                    localStorage.setItem(LAST_VOICE_ALERT_KEY, lastVoiceAlertId);
+                    return;
+                }
+            }
+
+            if (!alertData || !alertData.id || alertData.id === lastVoiceAlertId) return;
+            lastVoiceAlertId = alertData.id;
+            localStorage.setItem(LAST_VOICE_ALERT_KEY, lastVoiceAlertId);
+            showKitchenVoiceAlert(alertData);
+        });
+
+        function showKitchenVoiceAlert(alertData) {
+            const popup = document.getElementById('voice-alert-popup');
+            const message = document.getElementById('voice-alert-message');
+            const icon = document.getElementById('voice-alert-icon');
+            if (!popup || !message || !icon) return;
+
+            clearTimeout(voiceAlertTimer);
+            popup.classList.toggle('mistake', alertData.type === 'mistake');
+            message.textContent = alertData.message;
+            icon.textContent = alertData.type === 'mistake' ? '⚠️' : '🔊';
+            popup.classList.add('visible');
+
+            playKitchenVoiceAlert(alertData);
+            voiceAlertTimer = setTimeout(() => {
+                popup.classList.remove('visible');
+            }, 3000);
+        }
+
+        async function playKitchenVoiceAlert(alertData) {
+            window.speechSynthesis?.cancel();
+
+            const voiceAudio = alertData.type === 'kasaimori'
+                ? getKasaimoriVoiceAudio()
+                : alertData.type === 'mistake'
+                    ? getMistakeVoiceAudio()
+                    : null;
+
+            if (voiceAudio) {
+                try {
+                    voiceAudio.pause();
+                    voiceAudio.currentTime = 0;
+                    await voiceAudio.play();
+                    return;
+                } catch (error) {
+                    console.warn('専用音声ファイルの再生に失敗したため、端末の読み上げに切り替えます。', error);
+                }
+            }
+
+            speakKitchenMessage(alertData.message);
+        }
+
+        function speakKitchenMessage(message) {
+            if (!('speechSynthesis' in window)) {
+                playFallbackNotificationSound();
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.lang = 'ja-JP';
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            const japaneseVoice = window.speechSynthesis.getVoices().find(voice =>
+                voice.lang && voice.lang.toLowerCase().startsWith('ja')
+            );
+            if (japaneseVoice) utterance.voice = japaneseVoice;
+            window.speechSynthesis.speak(utterance);
+        }
 
         function checkForNewOrders(orderData, isInitialSnapshot) {
             const activeOrderKeys = {};

@@ -1,7 +1,7 @@
 // Service Worker - キャッシュ管理
 // キャッシュバージョンを変更することで、全ての端末で最新版を強制的に取得
 
-const CACHE_VERSION = 'v2.2.0'; // バージョンアップ!
+const CACHE_VERSION = 'v2.3.2'; // キッチン専用音声2種に対応
 const CACHE_NAME = `restaurant-order-system-${CACHE_VERSION}`;
 
 // キャッシュするファイルリスト
@@ -11,7 +11,9 @@ const urlsToCache = [
     './kitchen.html',
     './manifest.json',
     './manifest-kitchen.json',
-    './assets/notification-voice.mp3'
+    './assets/notification-voice.mp3',
+    './assets/kitchen-call-kasaimori.mp3',
+    './assets/kitchen-call-mistake.mp3'
 ];
 
 // Service Workerのインストール時

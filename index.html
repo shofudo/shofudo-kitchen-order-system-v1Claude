@@ -804,7 +804,40 @@
         }
 
         .bottom-action-bar.open .action-bar-buttons {
-            max-height: 130px;
+            max-height: 210px;
+        }
+
+        .kitchen-call-btn {
+            flex: 0 0 50%;
+            min-height: 54px;
+            padding: 9px 8px;
+            border: none;
+            border-top: 2px solid rgba(255, 255, 255, 0.16);
+            color: white;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.25;
+            cursor: pointer;
+            transition: filter 0.15s, transform 0.15s;
+        }
+
+        .kitchen-call-btn-request {
+            background: linear-gradient(135deg, #16877a, #0b625a);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .kitchen-call-btn-mistake {
+            background: linear-gradient(135deg, #c4692c, #984418);
+        }
+
+        .kitchen-call-btn:active {
+            filter: brightness(1.2);
+            transform: scale(0.98);
+        }
+
+        .kitchen-call-btn.sent {
+            background: linear-gradient(135deg, #4f9d55, #327439);
         }
 
         .action-bar-btn {
@@ -1066,6 +1099,8 @@
                     <span id="action-bar-handle-label">操作</span>
                 </div>
                 <div class="action-bar-buttons">
+                    <button class="kitchen-call-btn kitchen-call-btn-request" onclick="sendKitchenVoiceAlert('kasaimori', this)">🔊 果菜盛りをください</button>
+                    <button class="kitchen-call-btn kitchen-call-btn-mistake" onclick="sendKitchenVoiceAlert('mistake', this)">⚠ オーダーを間違えました</button>
                     <button class="action-bar-btn" id="btn-redo" onclick="toggleMode('redo')">↩ やり直し</button>
                     <button class="action-bar-btn" id="btn-partial-reset" onclick="toggleMode('partial-reset')">✂ 部分リセット</button>
                     <button class="action-bar-btn action-bar-btn-danger" onclick="resetOrderState()">⚠ 全体初期化</button>
@@ -2280,6 +2315,41 @@ if (['果菜盛り', 'しゃぶしゃぶ', '果菜盛', '鯛の細造り'].inclu
             const partialBtn = document.getElementById('btn-partial-reset');
             if (redoBtn) redoBtn.classList.toggle('mode-active', actionMode === 'redo');
             if (partialBtn) partialBtn.classList.toggle('mode-active', actionMode === 'partial-reset');
+        }
+
+        // キッチンへ短い音声メッセージを送信
+        function sendKitchenVoiceAlert(type, button) {
+            const messages = {
+                kasaimori: '果菜盛りをください',
+                mistake: 'オーダーを間違えました'
+            };
+            const message = messages[type];
+            if (!message || !window.firebaseDB || !window.firebaseRef || !window.firebaseSet) {
+                alert('キッチンへの送信準備ができていません。少し待ってから再度お試しください。');
+                return;
+            }
+
+            button.disabled = true;
+            const originalText = button.textContent;
+            const callRef = window.firebaseRef(window.firebaseDB, 'kitchenVoiceAlert');
+            window.firebaseSet(callRef, {
+                id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+                type,
+                message,
+                timestamp: Date.now()
+            }).then(() => {
+                button.textContent = '✓ キッチンへ送信しました';
+                button.classList.add('sent');
+            }).catch(err => {
+                console.error('キッチン音声通知の送信エラー:', err);
+                alert('キッチンへの送信に失敗しました');
+            }).finally(() => {
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('sent');
+                    button.disabled = false;
+                }, 1500);
+            });
         }
 
         // 単品オーダーモーダル
