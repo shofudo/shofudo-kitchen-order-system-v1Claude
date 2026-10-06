@@ -1152,7 +1152,7 @@
     <script>
         // データ構造
         const FIXED_ROOMS = ['やまぶき', 'なでしこ', 'つばき', 'やしお', 'さくら', 'ふじ', 'さつき', 'きすげ', 'ゆり', 'はぎ'];
-        const FIXED_STAFF = ['真弓', 'ミングマ', 'サラミ', 'パビ', '翔平'];
+        const FIXED_STAFF = ['真弓', 'ミングマ', 'サラミ', 'パビ', 'サビナ'];
         
         // ■ 献立データの定義 ■
 
@@ -1357,6 +1357,9 @@
                 if (!settings.customStaff) settings.customStaff = [];
                 // 産休中スタッフの旧保存データを既存端末からも除外
                 settings.staff = (settings.staff || []).filter(staff => staff.name !== 'ボビー');
+                settings.staff.forEach(staff => {
+                    if (staff.name === '翔平' && !staff.isCustom) staff.name = 'サビナ';
+                });
                 localStorage.setItem('orderSettings', JSON.stringify(settings));
             } else {
                 // デフォルト設定
